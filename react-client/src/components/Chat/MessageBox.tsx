@@ -1,8 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
-import SocketService from "../../../services/socketService";
+import SocketService from "../../services/socketService";
 import Message from "./Message";
 import {MessageType} from "./Chat";
-import './messages.css'
+import './messages.scss'
 import { v4 } from "uuid";
 
 

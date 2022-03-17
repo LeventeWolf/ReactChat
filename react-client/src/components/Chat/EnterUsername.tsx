@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
-import './enterUsername.css'
-import SocketService from "../../../services/socketService";
+import './enterUsername.scss'
+import SocketService from "../../services/socketService";
 import {MessageType} from "./Chat";
 
 type EnterUsernamePropTypes = {

@@ -1,5 +1,5 @@
 import React from "react";
-import './messages.css'
+import './messages.scss'
 import {MessageType} from "./Chat";
 
 type MessagePropTypes = {

@@ -1,16 +1,8 @@
 import React, {useState} from 'react';
-import styled from "styled-components";
-import './Chat.css';
+import './Chat.scss';
 import EnterUsername from "./EnterUsername";
 import MessageBox from "./MessageBox";
 import AvailableUsers from "./AvailableUsers";
-
-
-const Title = styled.h1`
-  width: 100%;
-  text-align: center;
-  color: #8e44ad;
-`;
 
 
 export interface MessageType {
@@ -32,7 +24,7 @@ const Chat: React.FC<PropTypes> = () => {
 
     return (
         <div id="main">
-            <Title>Chat</Title>
+            <h1 className="title">Chat</h1>
             <div id="chat-container">
                 {!isJoined ?
                     <EnterUsername setUsername={setUsername} setIsJoined={setIsJoined}/>
