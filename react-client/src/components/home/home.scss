@@ -1,0 +1,20 @@
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-text {
+  color: #8e44ad;
+  margin-top: 100px;
+}

@@ -3,12 +3,7 @@ import { Server, Socket } from "socket.io";
 
 @SocketController()
 export class RoomController {
-
-  constructor() {
-    console.log('RoomController called!')
-  }
-
-  public rooms = [];
+  private rooms = [];
 
   @OnMessage("update_rooms")
   public async updateRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
@@ -45,7 +40,6 @@ export class RoomController {
 
     console.log(io.sockets.adapter.rooms)
   }
-
 
   @OnMessage("get_all_rooms")
   public async emitRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
