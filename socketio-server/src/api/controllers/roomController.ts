@@ -21,27 +21,55 @@ export class RoomController {
     @OnMessage("new_room")
     public async createNewRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         log('#Creating new room!')
-        const room: Room = {
-            id: message.roomId,
+        const roomId = message.roomId;
+        const roomData = {
             users: [],
+            messages: [],
             capacity: 1000,
             visibility: 'public',
         }
+        const rooms = io.sockets.adapter.rooms;
 
-        if (chatData.rooms.map(room => room.id).includes(room.id)) {
-            console.log(`Room with id="${room.id}" already exists!`)
-            return;
-        }
+        chatData.roomsData[roomId] = roomData;
 
-        chatData.rooms.unshift(room);
+        socket.join(message.id);
+
+        console.log('<rooms>')
+        rooms.forEach((sockets, roomId, map) => {
+            console.log(sockets, roomId)
+        });
 
         log('emitting update!')
-        io.emit('update_rooms', {rooms: chatData.rooms})
+        io.emit('update_rooms', {rooms: []})
     }
 
 
-    @OnMessage("get_rooms")
+    @OnMessage("load_rooms")
     public async getRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         io.emit('update_rooms', {rooms: chatData.rooms})
     }
 }
+
+
+// @OnMessage("join_game")
+// public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+//     console.log("New User joining room: ", message);
+//     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
+//     const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
+//
+//     if (socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2)) {
+//         socket.emit("room_join_error", {
+//             error: "Room is full please choose another room to play!",
+//         });
+//     } else {
+//         await socket.join(message.roomId);
+//         socket.emit("room_joined");
+//
+//         if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
+//             socket.emit("start_game", { start: true, symbol: "x" });
+//             socket.to(message.roomId).emit("start_game", { start: false, symbol: "o" });
+//         }
+//     }
+//
+//     console.log(io.sockets.adapter.rooms)
+// }

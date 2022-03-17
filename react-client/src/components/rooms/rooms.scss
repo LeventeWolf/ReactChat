@@ -9,6 +9,25 @@
 
   table {
     outline: 1px solid black;
+    width: 100%;
+
+    td {
+      padding: 5px;
+    }
+
+    td:first-child, th:first-child {
+      padding-left: 30px;
+      padding-right:0;
+    }
+
+    th:last-child {
+      padding-left: 0;
+      padding-right: 30px;
+    }
+
+    td:last-child {
+      padding-right: 22px;
+    }
   }
 }
 
