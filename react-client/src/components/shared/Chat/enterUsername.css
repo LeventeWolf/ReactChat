@@ -1,0 +1,20 @@
+.chat-box-username {
+    position: relative;
+    height: 600px;
+    width: 100%;
+    padding: 10px;
+
+    background-color: rgba(174, 216, 226, 0.42);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.41);
+    border-radius: 20px;
+
+    grid-column-start: 2;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
