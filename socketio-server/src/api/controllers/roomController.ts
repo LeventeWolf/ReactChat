@@ -1,56 +1,47 @@
 import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} from "socket-controllers";
-import { Server, Socket } from "socket.io";
+import {Server, Socket} from "socket.io";
+import {log} from '../../lib/logger';
+import chatData from '../data/chatDataHandler'
+
+type User = {
+    id: string,
+    username: string,
+}
+
+type Room = {
+    id: string,
+    users: User[] | undefined,
+    capacity: number,
+    visibility: 'public' | 'private'
+}
 
 @SocketController()
 export class RoomController {
-  private rooms = [];
 
-  @OnMessage("update_rooms")
-  public async updateRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    console.log("Emitting new rooms!");
+    @OnMessage("new_room")
+    public async createNewRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        log('#Creating new room!')
+        const room: Room = {
+            id: message.roomId,
+            users: [],
+            capacity: 1000,
+            visibility: 'public',
+        }
 
-    const allRooms = io.sockets.adapter.rooms;
-    const rooms = [];
-    allRooms.forEach((value, key, map) => {
-      rooms.push(key);
-    })
+        if (chatData.rooms.map(room => room.id).includes(room.id)) {
+            console.log(`Room with id="${room.id}" already exists!`)
+            return;
+        }
 
-    socket.emit("all_rooms", {rooms});
-  }
+        chatData.rooms.unshift(room);
 
-  @OnMessage("join_game")
-  public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    console.log("New User joining room: ", message);
-    const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
-    const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-
-    if (socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2)) {
-      socket.emit("room_join_error", {
-        error: "Room is full please choose another room to play!",
-      });
-    } else {
-      await socket.join(message.roomId);
-      socket.emit("room_joined");
-
-      if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
-        socket.emit("start_game", { start: true, symbol: "x" });
-        socket.to(message.roomId).emit("start_game", { start: false, symbol: "o" });
-      }
+        log('emitting update!')
+        io.emit('update_rooms', {rooms: chatData.rooms})
     }
 
-    console.log(io.sockets.adapter.rooms)
-  }
 
-  @OnMessage("get_all_rooms")
-  public async emitRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    console.log("Showing all rooms!");
-
-    const allRooms = io.sockets.adapter.rooms;
-    const rooms = [];
-    allRooms.forEach((value, key, map) => {
-        rooms.push(key);
-    })
-
-    socket.emit('all_rooms', {rooms});
-  }
+    @OnMessage("get_rooms")
+    public async getRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        io.emit('update_rooms', {rooms: chatData.rooms})
+    }
 }
