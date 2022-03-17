@@ -39,7 +39,7 @@ function Home() {
 
     return (
         <AppContainer>
-            <WelcomeText>Welcome to Tic-Tac-Toe</WelcomeText>
+            <WelcomeText>Welcome to Chat.io</WelcomeText>
             <MainContainer>
                 {!isInRoom && <JoinRoom/>}
                 {isInRoom && <Game/>}

@@ -7,7 +7,7 @@ function Navbar() {
         <nav id='mainNav' className="navbar navbar-expand navbar-dark fixed-top">
             <div className="container-fluid">
                 <a className="navbar-brand js-scroll-trigger">
-                    &nbsp; <span id='navTitle' className='align-middle'>Tic-Tac-Toe</span>
+                    &nbsp; <span id='navTitle' className='align-middle'>Chat.io</span>
                 </a>
 
                 <ul className="navbar-nav ml-auto text-uppercase">
