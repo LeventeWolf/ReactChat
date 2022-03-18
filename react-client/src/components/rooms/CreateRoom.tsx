@@ -29,7 +29,13 @@ export const CreateRoom: React.FC<Props> = ( {handleFilter}) => {
     }
 
     function handleJoinRoom() {
-        console.log('Joining room: ' + roomName)
+        if (!roomName) {alert('Room name cannot be empty!');
+            return;
+        }
+
+        if (socketService.socket) {
+            socketService.socket.emit('join_room', {roomId: roomName})
+        }
     }
 
     return (

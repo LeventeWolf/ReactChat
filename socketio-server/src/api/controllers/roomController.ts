@@ -23,7 +23,7 @@ export class RoomController {
         try {
             log(`#Creating new room: id=${message.roomId}`)
             chatData.createNewRoom(message.roomId)
-            io.emit('update_rooms', {rooms: chatData.rooms})
+            await this.ioEmitRooms(io)
         } catch (e) {
             if (e.name === 'room_exists_error') {
                 const error = {
@@ -35,9 +35,26 @@ export class RoomController {
         }
     }
 
+    @OnMessage("join_room")
+    public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        try {
+            log(`#Joining new room\n socket=${socket}\n room=${message.roomId}`)
+            chatData.joinRoom(message.roomId)
+            await this.ioEmitRooms(io)
+        } catch (e) {
+            if (e.name === 'room_not_exists_error') {
+                const error = {
+                    type: e.name,
+                    message: e.message
+                }
+                io.emit('room_error', {error})
+            }
+        }
+    }
 
-    @OnMessage("load_rooms")
-    public async getRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+
+    @OnMessage("update_rooms")
+    public async ioEmitRooms(@SocketIO() io: Server) {
         io.emit('update_rooms', {rooms: chatData.rooms})
     }
 }

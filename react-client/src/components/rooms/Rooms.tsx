@@ -16,32 +16,34 @@ export interface RoomType {
     }
 }
 
-
 export type User = {
     id: string,
     username: string,
 }
+
 
 function Rooms() {
     const [roomsList, setRoomsList] = useState<RoomType[]>([]);
 
     useEffect(() => {
         if (socketService.socket) {
-            socketService.socket.emit('load_rooms');
+            socketService.socket.emit('update_rooms');
             socketService.socket.on('update_rooms', (message) => {
-                const roomList: RoomType[] = [];
-                for (const [key, value] of Object.entries(message.rooms)) {
-                    roomList.push({roomId: key, roomData: value} as RoomType)
-                }
-                setRoomsList(roomList);
+                updateRooms(message.rooms);
             });
             socketService.socket.on('room_error', (message) => {
-                if (message.error.type === 'room_exists_error') {
-                    console.log(`[${message.error.type}] ${message.error.message}`)
-                }
+                console.log(`[${message.error.type}] ${message.error.message}`)
             })
         }
     }, []);
+
+    function updateRooms(rooms: any) {
+        const roomList: RoomType[] = [];
+        for (const [key, value] of Object.entries(rooms)) {
+            roomList.push({roomId: key, roomData: value} as RoomType)
+        }
+        setRoomsList(roomList);
+    }
 
     function handleFilter(value: string) {
         // TODO
@@ -63,9 +65,9 @@ function Rooms() {
                         </tr>
                         </thead>
                         <tbody>
-                            {roomsList.map((r: any) => {
-                                return <Room key={r.roomId} room={r}/>
-                            })}
+                        {roomsList.map((r: any) => {
+                            return <Room key={r.roomId} room={r}/>
+                        })}
                         </tbody>
                     </table>
                 </div>
@@ -76,8 +78,6 @@ function Rooms() {
         </div>
     );
 }
-
-
 
 
 export default Rooms;

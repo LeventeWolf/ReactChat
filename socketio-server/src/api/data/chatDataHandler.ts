@@ -26,6 +26,9 @@ class ChatData {
         };
     }
 
+    joinRoom(roomId: string) {
+
+    }
 }
 
 
