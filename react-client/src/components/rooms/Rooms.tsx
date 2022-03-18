@@ -5,57 +5,40 @@ import socketService from "../../services/socketService";
 import CreateRoom from "./CreateRoom";
 import './rooms.scss';
 
+export type Room = {
+    roomId: string,
+    roomData: {
+        sockets: string[],
+        messages: [],
+        capacity: number,
+        visibility: 'public' | 'private'
+    }
+}
+
 
 export type User = {
     id: string,
     username: string,
 }
 
-export type Room = {
-    id: string,
-    users: User[] | undefined,
-    capacity: number,
-    visibility: 'public' | 'private'
-}
-
-type RoomPropsType = {
-    room: Room;
-}
-
-export const Room: React.FC<RoomPropsType> = ({room}) => {
-    function handleJoinRoom() {
-
-    }
-
-    return (
-        <tr>
-            <td>{room.id}</td>
-            <td className="text-center">{room.users?.length}</td>
-            <td className="text-end">
-                <button className="btn btn-outline-success btn-sm" type="button" onClick={handleJoinRoom}>
-                    Join
-                </button>
-            </td>
-        </tr>
-    );
-}
-
-
 function Rooms() {
-    const [rooms, setRooms] = useState<Room[]>([]);
+    const [roomsList, setRoomsList] = useState<Room[]>([]);
 
     useEffect(() => {
         if (socketService.socket) {
-            socketService.socket.on('update_rooms', (message) => {
-                setRooms(message.rooms);
-            });
-        }
-    }, [socketService.socket])
-
-    useEffect(() => {
-        if (socketService.socket) {
-            console.log('constructor load')
             socketService.socket.emit('load_rooms');
+            socketService.socket.on('update_rooms', (message) => {
+                const roomList: Room[] = [];
+                for (const [key, value] of Object.entries(message.rooms)) {
+                    roomList.push({roomId: key, roomData: value} as Room)
+                }
+                setRoomsList(roomList);
+            });
+            socketService.socket.on('room_error', (message) => {
+                if (message.error.type === 'room_exists_error') {
+                    console.log(`[${message.error.type}] ${message.error.message}`)
+                }
+            })
         }
     }, []);
 
@@ -68,7 +51,7 @@ function Rooms() {
             <h1>Rooms</h1>
             <CreateRoom handleFilter={handleFilter}/>
 
-            {rooms.length >= 1 ?
+            {roomsList.length >= 1 ?
                 <div className="table-wrap">
                     <table className="table table-light">
                         <thead>
@@ -79,8 +62,8 @@ function Rooms() {
                         </tr>
                         </thead>
                         <tbody>
-                            {rooms.map(room => {
-                                return <Room key={room.id} room={room}/>
+                            {roomsList.map((r: any) => {
+                                return <Room key={r.roomId} room={r}/>
                             })}
                         </tbody>
                     </table>
@@ -90,6 +73,29 @@ function Rooms() {
             }
 
         </div>
+    );
+}
+
+type RoomPropsType = {
+    room: Room
+}
+
+
+export const Room: React.FC<RoomPropsType> = ({room}) => {
+    function handleJoinRoom() {
+
+    }
+
+    return (
+        <tr>
+            <td>{room.roomId}</td>
+            <td className="text-center"> {room.roomData.sockets.length} / { room.roomData.capacity}</td>
+            <td className="text-end">
+                <button className="btn btn-outline-success btn-sm" type="button" onClick={handleJoinRoom}>
+                    Join
+                </button>
+            </td>
+        </tr>
     );
 }
 

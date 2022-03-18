@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+// @ts-ignore
 import { DefaultEventsMap } from "socket.io-client/build/typed-events";
 
 class SocketService {

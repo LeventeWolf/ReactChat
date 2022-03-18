@@ -12,7 +12,7 @@ import Home from "./components/home/Home";
 
 
 export const connectSocket = async () => {
-    await socketService.connect("http://192.168.0.22:9000")
+    await socketService.connect("http://localhost:9000")
         .then((socket) => {
             console.log('Connected to localhost:9000')
             console.log('Client id: ' + socket.id)
