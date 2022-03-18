@@ -15,14 +15,6 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     const inputChatRef = useRef<HTMLInputElement>(document.createElement("input"));
 
     useEffect(() => {
-        if (SocketService.socket) {
-            SocketService.socket.on('chat_message', (message) => {
-                setMessages(message.messages);
-            });
-        }
-    }, [SocketService.socket])
-
-    useEffect(() => {
         inputChatRef.current.addEventListener('keypress',  async (event) => {
             if (event.key === 'Enter') {
                 handleSendMessage();
@@ -31,13 +23,17 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
         if (SocketService.socket) {
             SocketService.socket.emit('chat_message');
+            SocketService.socket.on('chat_message', (message) => {
+                setMessages(message.messages);
+            });
         }
 
-        // return () => {
-        //     if (SocketService.socket) {
-        //         SocketService.socket.emit('leave_chat', {username});
-        //     }
-        // }
+        return () => {
+            if (SocketService.socket) {
+                SocketService.socket.emit('leave_chat', {username});
+                SocketService.socket.off('chat_message');
+            }
+        }
     }, [])
 
     function handleSendMessage() {

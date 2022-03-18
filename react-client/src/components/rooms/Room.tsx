@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useContext} from "react";
 import {RoomType} from "./Rooms";
+import socketService from "../../services/socketService";
 
 type RoomPropsType = {
     room: RoomType
@@ -7,7 +8,9 @@ type RoomPropsType = {
 
 export const Room: React.FC<RoomPropsType> = ({room}) => {
     function handleJoinRoom() {
-
+        if (socketService.socket) {
+            socketService.socket.emit('join_room', {roomId: room.roomId})
+        }
     }
 
     return (

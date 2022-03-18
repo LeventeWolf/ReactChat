@@ -24,6 +24,7 @@ export type User = {
 
 function Rooms() {
     const [roomsList, setRoomsList] = useState<RoomType[]>([]);
+    const [isJoined, setIsJoined] = useState(false);
 
     useEffect(() => {
         if (socketService.socket) {
@@ -34,7 +35,21 @@ function Rooms() {
             socketService.socket.on('room_error', (message) => {
                 console.log(`[${message.error.type}] ${message.error.message}`)
             })
+            socketService.socket.on('update_joined', (message) => {
+                if (message.status === 200) {
+                    console.log('joined to room')
+                    setIsJoined(true);
+                }
+            })
         }
+
+        return (() => {
+            if (socketService.socket) {
+                socketService.socket.off('update_rooms');
+                socketService.socket.off('room_error');
+                socketService.socket.off('update_joined');
+            }
+        })
     }, []);
 
     function updateRooms(rooms: any) {
@@ -54,27 +69,41 @@ function Rooms() {
             <h1>Rooms</h1>
             <CreateRoom handleFilter={handleFilter}/>
 
-            {roomsList.length >= 1 ?
-                <div className="table-wrap">
-                    <table className="table table-light">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th className="text-center">Users</th>
-                            <th className="text-end">Join</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {roomsList.map((r: any) => {
-                            return <Room key={r.roomId} room={r}/>
-                        })}
-                        </tbody>
-                    </table>
-                </div>
-                :
-                <div className="no-rooms">No rooms created!</div>
+            {isJoined ?
+                <div> in room </div>
+                    :
+                <></>
             }
 
+
+            <ListOfRooms roomTypes={roomsList}/>
+
+        </div>
+    );
+}
+
+
+function ListOfRooms(props: { roomTypes: RoomType[] } ) {
+    if (!props.roomTypes || props.roomTypes.length == 0) {
+        return <div className="no-rooms">No rooms created!</div>
+    }
+
+    return (
+        <div className="table-wrap">
+            <table className="table table-light">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th className="text-center">Users</th>
+                    <th className="text-end">Join</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {props.roomTypes.map((room) => {
+                        return <Room key={room.roomId} room={room}/>
+                    })}
+                </tbody>
+            </table>
         </div>
     );
 }
