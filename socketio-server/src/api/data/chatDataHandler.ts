@@ -43,8 +43,8 @@ class ChatData {
         this.rooms[roomId].sockets.push(socket);
     }
 
-    joinRandomRoom(roomId: string, socketId: string) {
-        this.createNewRoom(roomId)
+    joinRandomRoom(socketId: string) {
+        this.createNewRoom(socketId)
     }
 }
 

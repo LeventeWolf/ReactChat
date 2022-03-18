@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './availableUsers.scss';
-import SocketService from "../../../services/socketService";
+import SocketService from "../../services/socketService";
 import { v4 } from "uuid";
 
 type PropTypes = {

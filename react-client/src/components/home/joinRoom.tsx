@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useContext} from "react";
 import styled from "styled-components";
 import socketService from "../../services/socketService";
-
+import chatContext from "./chatContext";
 
 const JoinRoomContainer = styled.div`
   margin: 5rem auto;
@@ -33,7 +33,7 @@ const JoinButton = styled.button`
 `;
 
 export const JoinRoom = () => {
-    const [isJoining, setIsJoining] = useState<boolean>(false);
+    const {isJoining, setIsJoining} = useContext(chatContext);
 
     function handleJoin() {
         setIsJoining(true);

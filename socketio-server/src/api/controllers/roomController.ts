@@ -58,24 +58,4 @@ export class RoomController {
     public async ioEmitRooms(@SocketIO() io: Server) {
         io.emit('update_rooms', {rooms: chatData.rooms})
     }
-
-
-    @OnMessage("join_random_room")
-    public async joinRandomRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        try {
-            chatData.joinRandomRoom(message.roomId, socket.id);
-
-
-        } catch (e) {
-            io.emit('room_error', {
-                error: {
-                    type: e.name,
-                    message: e.message
-                }
-            });
-            log('#Joining new room err.: ' + e.message)
-        }
-
-    }
-
 }

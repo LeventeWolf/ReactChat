@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, {useLayoutEffect, useState} from "react";
 
 import socketService from "./services/socketService";
 import GameContext, {IGameContextProps} from "./gameContext";
@@ -9,6 +9,10 @@ import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
 import Chat from "./components/shared/chat/Chat";
 import Home from "./components/home/Home";
+import EnterUsername from "./components/shared/chat/EnterUsername";
+import MessageBox from "./components/shared/chat/MessageBox";
+import AvailableUsers from "./components/allChat/AvailableUsers";
+import AllChat from "./components/allChat/AllChat";
 
 
 export const connectSocket = async () => {
@@ -17,6 +21,7 @@ export const connectSocket = async () => {
             console.log("Error: ", err);
         });
 };
+
 
 function App() {
     const [isInRoom, setInRoom] = useState(false);
@@ -44,7 +49,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>
-                    <Route path="/chat" element={<Chat/>}/>
+                    <Route path="/chat" element={<AllChat/>}/>
                 </Routes>
             </Router>,
         </GameContext.Provider>

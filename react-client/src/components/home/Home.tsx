@@ -1,25 +1,50 @@
-import React, {useContext} from 'react';
-import gameContext from "../../gameContext";
+import React, {useContext, useEffect, useState} from 'react';
 import {JoinRoom} from "./joinRoom";
 import './home.scss';
 import Chat from "../shared/chat/Chat";
+import ChatContext, {ChatContextProps} from "./chatContext";
+import SocketService from "../../services/socketService";
+import EnterUsername from "../shared/chat/EnterUsername";
+import MessageBox from "../shared/chat/MessageBox";
+import AvailableUsers from "../allChat/AvailableUsers";
 
-type PropTypes = {
+export const Home: React.FC = () => {
+    const [isInRoom, setInRoom] = useState<boolean>(false);
+    const [isJoining, setIsJoining] = useState<boolean>(false);
 
-}
+    const chatContextValue: ChatContextProps = {
+        isInRoom, setInRoom,
+        isJoining, setIsJoining,
+    };
 
+    useEffect(() => {
+        if (SocketService.socket) {
+            SocketService.socket.on('partner_found', (message) => {
+                setIsJoining(false);
+                setInRoom(true);
+            });
+        }
+    }, [])
 
-export const Home: React.FC<PropTypes> = () => {
-    const {isInRoom} = useContext(gameContext);
+    if (isInRoom) {
+        return (
+            <ChatContext.Provider value={chatContextValue}>
+                <Chat>
+                    <MessageBox username={'anonymous'}/>
+                </Chat>
+            </ChatContext.Provider>
+        )
+    }
 
     return (
-        <div className="app-container">
-            <h1 className="welcome-text">Welcome to Chat.io</h1>
-            <div className="main-container">
-                {!isInRoom && <JoinRoom/>}
-                {isInRoom && <Chat/>}
+        <ChatContext.Provider value={chatContextValue}>
+            <div className="app-container">
+                <h1 className="welcome-text">Welcome to Chat.io</h1>
+                <div className="main-container">
+                    <JoinRoom/>
+                </div>
             </div>
-        </div>
+        </ChatContext.Provider>
     );
 }
 
