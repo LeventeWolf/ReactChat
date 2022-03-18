@@ -9,6 +9,23 @@ class ChatData {
     getUserBySocket(socketId) {
         return this.users.find(user => user.id === socketId);
     }
+
+    createNewRoom(roomId: string) {
+        if (this.rooms[roomId]) {
+            throw {
+                name: 'room_exists_error',
+                message: 'room already exists'
+            }
+        }
+
+        this.rooms[roomId] = {
+            sockets: [],
+            messages: [],
+            capacity: 1000,
+            visibility: 'public',
+        };
+    }
+
 }
 
 

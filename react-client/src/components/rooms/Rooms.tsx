@@ -4,8 +4,9 @@ import socketService from "../../services/socketService";
 
 import CreateRoom from "./CreateRoom";
 import './rooms.scss';
+import {Room} from "./Room";
 
-export type Room = {
+export interface RoomType {
     roomId: string,
     roomData: {
         sockets: string[],
@@ -22,15 +23,15 @@ export type User = {
 }
 
 function Rooms() {
-    const [roomsList, setRoomsList] = useState<Room[]>([]);
+    const [roomsList, setRoomsList] = useState<RoomType[]>([]);
 
     useEffect(() => {
         if (socketService.socket) {
             socketService.socket.emit('load_rooms');
             socketService.socket.on('update_rooms', (message) => {
-                const roomList: Room[] = [];
+                const roomList: RoomType[] = [];
                 for (const [key, value] of Object.entries(message.rooms)) {
-                    roomList.push({roomId: key, roomData: value} as Room)
+                    roomList.push({roomId: key, roomData: value} as RoomType)
                 }
                 setRoomsList(roomList);
             });
@@ -76,27 +77,7 @@ function Rooms() {
     );
 }
 
-type RoomPropsType = {
-    room: Room
-}
 
 
-export const Room: React.FC<RoomPropsType> = ({room}) => {
-    function handleJoinRoom() {
-
-    }
-
-    return (
-        <tr>
-            <td>{room.roomId}</td>
-            <td className="text-center"> {room.roomData.sockets.length} / { room.roomData.capacity}</td>
-            <td className="text-end">
-                <button className="btn btn-outline-success btn-sm" type="button" onClick={handleJoinRoom}>
-                    Join
-                </button>
-            </td>
-        </tr>
-    );
-}
 
 export default Rooms;

@@ -20,32 +20,18 @@ export class RoomController {
 
     @OnMessage("new_room")
     public async createNewRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        log('#Creating new room!')
-        console.log(`roomId: ${message.roomId}`)
-
-        createNewRoom(message.roomId)
-        const rooms = chatData.rooms;
-        console.log(rooms)
-        io.emit('update_rooms', {rooms})
-        log('rooms emitted!')
-
-        function createNewRoom(roomId: string) {
-            if (chatData.rooms[roomId]) {
-                console.log('room already created');
+        try {
+            log(`#Creating new room: id=${message.roomId}`)
+            chatData.createNewRoom(message.roomId)
+            io.emit('update_rooms', {rooms: chatData.rooms})
+        } catch (e) {
+            if (e.name === 'room_exists_error') {
                 const error = {
-                    type: 'room_exists_error',
-                    message: 'room already exists'
+                    type: e.name,
+                    message: e.message
                 }
                 io.emit('room_error', {error})
-                return
             }
-
-            chatData.rooms[roomId] = {
-                sockets: [],
-                messages: [],
-                capacity: 1000,
-                visibility: 'public',
-            };
         }
     }
 

@@ -21,8 +21,6 @@ export const CreateRoom: React.FC<Props> = ( {handleFilter}) => {
             return;
         }
 
-        console.log('New room: ' + roomName);
-
         if (socketService.socket) {
             socketService.socket.emit('new_room', {roomId: roomName})
         }
