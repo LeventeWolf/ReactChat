@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import gameContext from "../../gameContext";
 import {JoinRoom} from "./joinRoom";
-import {Game} from "../game";
 import './home.scss';
+import Chat from "../shared/chat/Chat";
 
 type PropTypes = {
 
@@ -17,7 +17,7 @@ export const Home: React.FC<PropTypes> = () => {
             <h1 className="welcome-text">Welcome to Chat.io</h1>
             <div className="main-container">
                 {!isInRoom && <JoinRoom/>}
-                {isInRoom && <Game/>}
+                {isInRoom && <Chat/>}
             </div>
         </div>
     );

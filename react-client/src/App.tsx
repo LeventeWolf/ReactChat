@@ -5,9 +5,9 @@ import GameContext, {IGameContextProps} from "./gameContext";
 
 import "./App.css";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import Navbar from "./components/shared/Navbar";
+import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
-import Chat from "./components/Chat/Chat";
+import Chat from "./components/shared/chat/Chat";
 import Home from "./components/home/Home";
 
 
