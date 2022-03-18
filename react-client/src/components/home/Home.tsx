@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import gameContext from "../../gameContext";
-import {JoinRoom} from "../joinRoom";
+import {JoinRoom} from "./joinRoom";
 import {Game} from "../game";
 import './home.scss';
 

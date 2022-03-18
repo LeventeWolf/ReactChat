@@ -10,7 +10,7 @@ class ChatData {
         return this.users.find(user => user.id === socketId);
     }
 
-    createNewRoom(roomId: string) {
+    createNewRoom(roomId: string, capacity=1000) {
         if (this.rooms[roomId]) {
             throw {
                 name: 'room_exists_error',
@@ -26,8 +26,25 @@ class ChatData {
         };
     }
 
-    joinRoom(roomId: string) {
+    joinRoom(roomId: string, socket: string) {
+        if (!this.rooms[roomId]) {
+            throw {
+                name: 'room_not_exists',
+                message: 'room not exists! ' + roomId
+            };
+        }
+        if (this.rooms[roomId].sockets.includes(socket)) {
+            throw {
+                name: 'already_in_room_error',
+                message: 'You are already in this room! ' + roomId + ' ' + socket
+            };
+        }
 
+        this.rooms[roomId].sockets.push(socket);
+    }
+
+    joinRandomRoom(roomId: string, socketId: string) {
+        this.createNewRoom(roomId)
     }
 }
 

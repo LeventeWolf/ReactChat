@@ -25,82 +25,57 @@ export class RoomController {
             chatData.createNewRoom(message.roomId)
             await this.ioEmitRooms(io)
         } catch (e) {
-            if (e.name === 'room_exists_error') {
-                const error = {
+            io.emit('room_error', {
+                error: {
                     type: e.name,
                     message: e.message
                 }
-                io.emit('room_error', {error})
-            }
+            });
         }
     }
 
     @OnMessage("join_room")
     public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         try {
+            chatData.joinRoom(message.roomId, socket.id);
+            await this.ioEmitRooms(io);
+
+            io.emit('update_joined', {status: 200})
             log(`#Joining new room\n socket=${socket}\n room=${message.roomId}`)
-            chatData.joinRoom(message.roomId)
-            await this.ioEmitRooms(io)
         } catch (e) {
-            if (e.name === 'room_not_exists_error') {
-                const error = {
+            io.emit('room_error', {
+                error: {
                     type: e.name,
                     message: e.message
                 }
-                io.emit('room_error', {error})
-            }
+            });
+            log('#Joining new room err.: ' + e.message)
         }
-    }
 
+    }
 
     @OnMessage("update_rooms")
     public async ioEmitRooms(@SocketIO() io: Server) {
         io.emit('update_rooms', {rooms: chatData.rooms})
     }
+
+
+    @OnMessage("join_random_room")
+    public async joinRandomRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        try {
+            chatData.joinRandomRoom(message.roomId, socket.id);
+
+
+        } catch (e) {
+            io.emit('room_error', {
+                error: {
+                    type: e.name,
+                    message: e.message
+                }
+            });
+            log('#Joining new room err.: ' + e.message)
+        }
+
+    }
+
 }
-
-
-// @OnMessage("join_game")
-// public async joinGame(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-//     console.log("New User joining room: ", message);
-//     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
-//     const socketRooms = Array.from(socket.rooms.values()).filter((r) => r !== socket.id);
-//
-//     if (socketRooms.length > 0 || (connectedSockets && connectedSockets.size === 2)) {
-//         socket.emit("room_join_error", {
-//             error: "Room is full please choose another room to play!",
-//         });
-//     } else {
-//         await socket.join(message.roomId);
-//         socket.emit("room_joined");
-//
-//         if (io.sockets.adapter.rooms.get(message.roomId).size === 2) {
-//             socket.emit("start_game", { start: true, symbol: "x" });
-//             socket.to(message.roomId).emit("start_game", { start: false, symbol: "o" });
-//         }
-//     }
-//
-//     console.log(io.sockets.adapter.rooms)
-// }
-
-//
-// rooms = io.sockets.adapter.rooms;
-//
-// socket.join(roomId);
-// const convertedMap = convertMapToList(rooms);
-// const filteredRooms = convertedMap.filter((room: any) => !room.sockets.includes(room.id));
-//
-// log('emitting update!')
-// io.emit('update_rooms', {rooms: filteredRooms})
-//
-// function convertMapToList(rooms: Map<string, Set<string>>) {
-//     const result = [];
-//     for (const roomEntry of Array.from(rooms)) {
-//         const room = {
-//             id: roomEntry[0],
-//             sockets: Array.from(roomEntry[1])
-//         }
-//         result.push(room);
-//     }
-//     return result;
-// }

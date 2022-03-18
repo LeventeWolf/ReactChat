@@ -16,7 +16,7 @@ export class ChatController {
     @OnMessage("join_chat")
     public async joinChat(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         if (!message.username) return;
-        console.log(message.username + ' joined the chat!');
+        console.log(message.username + ' joined the Chat!');
 
         chatData.users.push({id: socket.id, username: message.username});
         io.emit('join_chat', {users: chatData.users.map(user => user.username )});
@@ -38,8 +38,8 @@ export class ChatController {
         // Remove user from available users
         io.emit('join_chat', {users: chatData.users.map(user => user.username)});
 
-        // Send chat message '{username} left the chat'
-        const messageData: MessageType = {type: 'join', content: {messageValue: 'left the chat!', username: user.username, date: new Date().toTimeString().split(' ')[0],}}
+        // Send Chat message '{username} left the Chat'
+        const messageData: MessageType = {type: 'join', content: {messageValue: 'left the Chat!', username: user.username, date: new Date().toTimeString().split(' ')[0],}}
         chatData.messages.unshift(messageData);
         io.emit('chat_message', {messages: chatData.messages})
     }
