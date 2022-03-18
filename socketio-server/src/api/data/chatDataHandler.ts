@@ -3,7 +3,7 @@ import {MessageType} from "../controllers/chatController";
 
 class ChatData {
     public messages: MessageType[] = [];
-    public users = [{id: 'socket_id_12345', username: 'Big Brother 👀'}];
+    public users = [{id: 'socket_id_12345', username: 'Big Brother 👀', isInRoom: true}];
     public rooms = {}
 
     getUserBySocket(socketId) {

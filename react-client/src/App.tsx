@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 
 import socketService from "./services/socketService";
 import GameContext, {IGameContextProps} from "./gameContext";
@@ -12,11 +12,8 @@ import Home from "./components/home/Home";
 
 
 export const connectSocket = async () => {
-    await socketService.connect("http://localhost:9000")
-        .then((socket) => {
-            console.log('Connected to localhost:9000')
-            console.log('Client id: ' + socket.id)
-        }).catch((err) => {
+    await socketService.connect("http://localhost:9000").
+        catch((err) => {
             console.log("Error: ", err);
         });
 };

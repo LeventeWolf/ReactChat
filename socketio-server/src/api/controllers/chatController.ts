@@ -18,7 +18,7 @@ export class ChatController {
         if (!message.username) return;
         console.log(message.username + ' joined the Chat!');
 
-        chatData.users.push({id: socket.id, username: message.username});
+        chatData.users.push({id: socket.id, username: message.username, isInRoom: true});
         io.emit('join_chat', {users: chatData.users.map(user => user.username )});
     }
 
