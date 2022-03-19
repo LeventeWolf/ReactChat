@@ -1,8 +1,8 @@
 import Chat from "../shared/chat/Chat";
 import EnterUsername from "../shared/chat/EnterUsername";
-import MessageBox from "../shared/chat/MessageBox";
 import AvailableUsers from "./AvailableUsers";
 import React, {useState} from "react";
+import AllChatMessageBox from "./AllChatMessageBox";
 
 export const AllChat = () => {
     const [username, setUsername] = useState('');
@@ -13,7 +13,7 @@ export const AllChat = () => {
             {!isJoined ?
                 <EnterUsername setUsername={setUsername} setIsJoined={setIsJoined}/>
                 :
-                <MessageBox username={username}/>
+                <AllChatMessageBox username={username}/>
             }
             <AvailableUsers />
         </Chat>

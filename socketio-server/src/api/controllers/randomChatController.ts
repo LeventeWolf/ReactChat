@@ -61,7 +61,6 @@ export class RandomChatController {
         chatData.setAdapterRooms(io.sockets.adapter.rooms)
     }
 
-
     /**
      * Handles the following cleanups when a socket had been disconnected
      * 1. If the socket was searching for partner: remove it from joingPool
@@ -89,42 +88,4 @@ export class RandomChatController {
             io.to(socketInfo.data.inRoom).emit('partner_left', {message});
         }
     }
-
-    /**
-     * Handles the following cleanups when a socket had been disconnected
-     * 1. If the socket was searching for partner: remove it from joingPool
-     * 2. If the socket was in a room: remove it from the room,
-     *  then alert partner that he left
-     * @param io
-     * @param socket
-     */
-    @OnMessage("disconnect")
-    public async handleDisconnect(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
-        log(`Disconnected ${socket.id}`)
-        const socketInfo = socketLogger.getSocket(socket.id);
-
-        if (socketInfo.data.inRoom) {
-            log(`Partner left from room: ${socketInfo.data.inRoom}`)
-
-            const message: MessageType = {
-                type: 'join',
-                content: {
-                    messageValue: 'left the chat!',
-                    username: 'partner',
-                    date: new Date().toTimeString().split(' ')[0],
-                }
-            }
-
-            io.to(socketInfo.data.inRoom).emit('partner_left', {message});
-        }
-
-        // if he was searching, remove him from joiningPool
-        if (chatData.joiningPool.has(socket.id)) {
-            chatData.joiningPool.delete(socket.id);
-        }
-
-
-        socketData.removeSocket(socket.id);
-    }
-
 }

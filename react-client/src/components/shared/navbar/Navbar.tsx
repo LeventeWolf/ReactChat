@@ -4,7 +4,7 @@ import "./navbar.scss"
 
 function Navbar() {
     return (
-        <nav id='mainNav' className="navbar navbar-expand navbar-dark fixed-top">
+        <nav id='mainNav' className="navbar navbar-expand navbar-dark">
             <div className="container-fluid">
                 <a className="navbar-brand js-scroll-trigger">
                     &nbsp; <span id='navTitle' className='align-middle'>Chat.io</span>

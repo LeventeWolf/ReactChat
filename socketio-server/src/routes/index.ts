@@ -2,6 +2,7 @@ import * as express from "express";
 import chatData from "../api/services/chatDataHandler";
 import {log} from "../lib/logger";
 import socketService from "../api/services/socketLoggerService";
+import socketLogger from "../api/services/socketLoggerService";
 
 const router = express.Router();
 
@@ -10,9 +11,9 @@ router.get("/", function (req, res, next) {
     res.send("Hello Boy!!");
 });
 
-router.get("/api/adapter-rooms", function (req, res, next) {
+router.get("/api/rooms", function (req, res, next) {
     try {
-        const result = Array.from(chatData.joiningAdapterRooms).map((dict, index) => {
+        const result = Array.from(socketLogger.rooms).map((dict, index) => {
             return {
                 id: dict[0],
                 sockets: Array.from(dict[1])

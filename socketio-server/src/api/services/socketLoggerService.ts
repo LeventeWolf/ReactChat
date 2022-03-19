@@ -11,6 +11,7 @@ interface SocketInfo {
 
 class SocketLogger {
     public socketsData = new Map<string, SocketInfo>();
+    public rooms = new Map<string, Set<string>>();
 
     log_storeSocket(socketId: string) {
         this.socketsData.set(socketId, {
@@ -57,6 +58,10 @@ class SocketLogger {
 
     removeSocket(socketId: string): void {
         this.socketsData.delete(socketId);
+    }
+
+    setRooms(rooms: Map<string, Set<string>>) {
+        this.rooms = rooms;
     }
 }
 

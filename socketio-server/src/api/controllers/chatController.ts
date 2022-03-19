@@ -18,8 +18,8 @@ export class ChatController {
     @OnMessage("chat_message")
     public async updateRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         Array.from(socket.rooms).forEach(room => {
-            const roomSize = io.sockets.adapter.rooms.get(room).size;
-            if (roomSize !== 2) return
+            const adapter_room = io.sockets.adapter.rooms.get(room);
+            if (room === socket.id && adapter_room.size === 1) return;
 
             io.to(room).emit('chat_message', {message});
         })
