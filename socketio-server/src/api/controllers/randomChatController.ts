@@ -70,9 +70,24 @@ export class RandomChatController {
      * @param io
      * @param socket
      */
-    @OnMessage("disconnect_random_chat")
-    public async handleDisconnectRandomChat(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+    @OnMessage("leave_random_chat")
+    public async handleLeave(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+        const socketInfo = socketLogger.getSocket(socket.id);
 
+        if (socketInfo.data.inRoom) {
+            log(`Partner left from room: ${socketInfo.data.inRoom}`)
+
+            const message: MessageType = {
+                type: 'join',
+                content: {
+                    messageValue: 'left the chat!',
+                    username: 'partner',
+                    date: new Date().toTimeString().split(' ')[0],
+                }
+            }
+
+            io.to(socketInfo.data.inRoom).emit('partner_left', {message});
+        }
     }
 
     /**

@@ -16,6 +16,8 @@ const all_messages: MessageType[] = [];
 export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const inputChatRef = useRef<HTMLInputElement>(document.createElement("input"));
+    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
+
 
     useEffect(() => {
         if (!SocketService.socket) return;
@@ -25,16 +27,35 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
             setMessages([...all_messages])
         });
 
-        inputChatRef.current.addEventListener('keypress',  async (event) => {
+        SocketService.socket.on('partner_left', (response) => {
+            all_messages.unshift(response.message);
+            setMessages([...all_messages])
+            setPartnerLeft(true);
+
+            if (inputChatRef.current) {
+                inputChatRef.current.removeEventListener('keypress', sendMessageOnEnter);
+            }
+
+            if (!SocketService.socket) return;
+            SocketService.socket.off('partner_left');
+            SocketService.socket.off('chat_message');
+        });
+
+
+        if (inputChatRef.current) {
+            inputChatRef.current.addEventListener('keypress',  sendMessageOnEnter);
+        }
+
+        async function sendMessageOnEnter(event: any) {
             if (event.key === 'Enter') {
                 handleSendMessage();
             }
-        });
+        }
 
         return () => {
             if (!SocketService.socket) return
 
-            SocketService.socket.emit('disconnect_random_chat');
+            SocketService.socket.emit('leave_random_chat');
             SocketService.socket.off('chat_message');
         }
     }, [])
@@ -57,6 +78,10 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         return;
     }
 
+    function handleLeave() {
+        window.location.reload(false);
+    }
+
     return (
         <div className="chat-box">
             <div className="messages-wrap">
@@ -67,12 +92,19 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
             <div className="message-send-wrap">
                 {/*<span className="username">user: {username}</span>*/}
-                <input type="text" className="form-control send-message" placeholder="Send something nice!"
-                       ref={inputChatRef}/>
-                <button type="button" className="btn btn-outline-secondary"
-                        onClick={handleSendMessage}>Send
-                </button>
+                {partnerLeft ?
+                    <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
+                    :
+                    <>
+                        <input type="text" className="form-control send-message" placeholder="Send something nice!"
+                               ref={inputChatRef}/>
+                        <button type="button" className="btn btn-outline-secondary"
+                                onClick={handleSendMessage}>Send
+                        </button>
+                    </>
+                }
             </div>
+
         </div>
     );
 }

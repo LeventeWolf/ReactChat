@@ -17,8 +17,8 @@
     justify-content: center;
     position: absolute;
     bottom: 0;
-    width: 100%;
     display: flex;
+    width: 100%;
 }
 
 .send-message {
@@ -88,4 +88,9 @@
     height: 40px;
 
     color: grey;
+}
+
+.btn-leave-chat {
+    margin-bottom: 20px;
+    padding: 5px 20px;
 }
