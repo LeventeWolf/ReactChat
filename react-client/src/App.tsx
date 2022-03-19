@@ -3,7 +3,7 @@ import React, {useLayoutEffect, useState} from "react";
 import socketService from "./services/socketService";
 import GameContext, {IGameContextProps} from "./gameContext";
 
-import "./App.css";
+import "./App.scss";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
@@ -16,11 +16,11 @@ import AllChat from "./components/allChat/AllChat";
 
 
 export const connectSocket = async () => {
-    await socketService.connect("http://localhost:9000").
-        catch((err) => {
+    await socketService.connect("http://localhost:9000")
+        .catch((err) => {
             console.log("Error: ", err);
         });
-};
+}
 
 
 function App() {

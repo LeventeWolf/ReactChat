@@ -1,6 +1,6 @@
 .chat-box {
     position: relative;
-    height: 600px;
+    height: 50%;
     width: 100%;
     padding: 10px;
 
@@ -10,6 +10,13 @@
 
     grid-column-start: 2;
 }
+
+@media (max-width: 1000px) {
+    .chat-box {
+        height: 70%;
+    }
+}
+
 
 /* Input */
 

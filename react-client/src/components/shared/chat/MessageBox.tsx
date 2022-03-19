@@ -4,7 +4,6 @@ import Message from "./Message";
 import {MessageType} from "./Chat";
 import './messages.scss'
 import { v4 } from "uuid";
-import socketService from "../../../services/socketService";
 
 
 type MessageBoxPropTypes = {
@@ -96,7 +95,7 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
                     <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
                     :
                     <>
-                        <input type="text" className="form-control send-message" placeholder="Send something nice!"
+                        <input type="text" className="form-control send-message" placeholder="Say something nice!"
                                ref={inputChatRef}/>
                         <button type="button" className="btn btn-outline-secondary"
                                 onClick={handleSendMessage}>Send
