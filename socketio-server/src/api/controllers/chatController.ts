@@ -14,6 +14,8 @@ export interface MessageType {
 
 @SocketController()
 export class ChatController {
+
+
     // @OnMessage("join_chat")
     // public async joinChat(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
     //     if (!message.username) return;
@@ -45,11 +47,6 @@ export class ChatController {
     //     io.emit('chat_message', {messages: chatData.messages})
     // }
     //
-    // @OnDisconnect()
-    // public async disconnect(@SocketIO() io: Server, @ConnectedSocket() socket: any) {
-    //     await this.leaveChat(io, socket);
-    // }
-
     @OnMessage("chat_message")
     public async updateRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         Array.from(socket.rooms).forEach(room => {
@@ -58,5 +55,15 @@ export class ChatController {
 
             io.to(room).emit('chat_message', {message});
         })
+    }
+
+    @OnDisconnect()
+    public async disconnect(@SocketIO() io: Server, @ConnectedSocket() socket: any) {
+        log('Disconnected socket ' + socket.id)
+        console.log(' its rooms: ')
+        Array.from(socket.rooms).forEach((room: string) => {
+            console.log(room)
+        })
+        console.log('-----------')
     }
 }

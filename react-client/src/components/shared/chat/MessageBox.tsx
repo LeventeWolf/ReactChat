@@ -33,9 +33,9 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
         return () => {
             if (!SocketService.socket) return
-            // SocketService.socket.emit('leave_chat', {username});
-            SocketService.socket.off('chat_message');
 
+            SocketService.socket.emit('leave_chat');
+            SocketService.socket.off('chat_message');
         }
     }, [])
 
