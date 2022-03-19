@@ -8,6 +8,7 @@ class ChatData {
     public rooms = {}
     public joiningAdapterRooms = new Map();
     public joiningPool = new Set();
+    public allSockets = new Set();
 
 
     getUserBySocket(socketId) {

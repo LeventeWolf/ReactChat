@@ -27,11 +27,16 @@ router.get("/api/adapter-rooms", function (req, res, next) {
 router.get("/api/joining-pool", function (req, res, next) {
     try {
         const result = Array.from(chatData.joiningPool);
-
-        log('Joining pool:')
-        console.log(result);
-
         return res.send({'joiningPool': result}).end();
+    } catch (e) {
+        console.log(e)
+    }
+});
+
+router.get("/api/sockets", function (req, res, next) {
+    try {
+        const result = Array.from(chatData.allSockets);
+        return res.send({'connectedSockets': result}).end();
     } catch (e) {
         console.log(e)
     }

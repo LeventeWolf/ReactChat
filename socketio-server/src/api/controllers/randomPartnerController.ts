@@ -34,7 +34,7 @@ export class RandomPartnerController {
         try {
             const connectedSockets = io.sockets.adapter.rooms;
 
-            log('-- Available Rooms --')
+            // log('-- Available Rooms --')
             Array.from(connectedSockets).forEach((dict, index) => {
                 const key = dict[0];
                 const sockets = dict[1];
@@ -43,17 +43,14 @@ export class RandomPartnerController {
                     socket.join(key);
                     io.to(key).emit('partner_found');
 
-                    console.log(`${socket.id} joined to room: ${key}`)
-                    console.log(`${index}. ${key} -`, Array.from(sockets).map(value => value));
+                    log(`Chat established: ${socket.id} - ${key}`)
+                    // console.log(`${index}. ${key} -`, Array.from(sockets).map(value => value));
                     sockets.forEach(socketId => {
                         chatData.joiningPool.delete(socketId);
                     })
                     return;
                 }
             })
-
-
-            console.log()
 
             // console.log(`available rooms:`);
             // socketRooms.forEach(room => {

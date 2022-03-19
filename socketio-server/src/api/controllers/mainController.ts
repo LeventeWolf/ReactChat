@@ -1,4 +1,4 @@
-import {ConnectedSocket, OnConnect, SocketController, SocketIO,} from "socket-controllers";
+import {ConnectedSocket, OnConnect, OnDisconnect, SocketController, SocketIO,} from "socket-controllers";
 import {Socket, Server} from "socket.io";
 import {log} from "../../lib/logger";
 import chatData from "../data/chatDataHandler";
@@ -7,8 +7,13 @@ import chatData from "../data/chatDataHandler";
 export class MainController {
     @OnConnect()
     public onConnection(@ConnectedSocket() socket: Socket, @SocketIO() io: Server) {
-        log("New Socket connected: ", socket.id);
+        log("New Socket connected: "+ socket.id);
 
-        // chatData.setAdapterRooms(io.sockets.adapter.rooms)
+        chatData.allSockets.add(socket.id);
+    }
+
+    @OnDisconnect()
+    public onDisconnection(@ConnectedSocket() socket: Socket, @SocketIO() io: Server) {
+        chatData.allSockets.delete(socket.id);
     }
 }
