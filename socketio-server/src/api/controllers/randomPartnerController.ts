@@ -25,14 +25,11 @@ function delay(delayInms) {
 
 @SocketController()
 export class RandomPartnerController {
-
-    private joiningPool = new Set();
-
     @OnMessage("join_random_room")
     public async joinRandomRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         log(`Joining random room: ${socket.id}`);
 
-        this.joiningPool.add(socket.id);
+        chatData.joiningPool.add(socket.id);
 
         try {
             const connectedSockets = io.sockets.adapter.rooms;
@@ -42,14 +39,14 @@ export class RandomPartnerController {
                 const key = dict[0];
                 const sockets = dict[1];
 
-                if (this.joiningPool.has(key) && socket.id !== dict[0] && sockets.size < 2) {
+                if (chatData.joiningPool.has(key) && socket.id !== dict[0] && sockets.size < 2) {
                     socket.join(key);
                     io.to(key).emit('partner_found');
 
                     console.log(`${socket.id} joined to room: ${key}`)
                     console.log(`${index}. ${key} -`, Array.from(sockets).map(value => value));
                     sockets.forEach(socketId => {
-                        this.joiningPool.delete(socketId);
+                        chatData.joiningPool.delete(socketId);
                     })
                     return;
                 }
@@ -67,7 +64,7 @@ export class RandomPartnerController {
         }
 
         // const socketRooms = Array.from(connectedSockets.values()).filter((r) => r !== socket.id);
-
+        chatData.setAdapterRooms(io.sockets.adapter.rooms)
     }
 
 
@@ -85,8 +82,8 @@ export class RandomPartnerController {
 
 
         // if he was searching, remove him from joiningPool
-        if (this.joiningPool.has(socket.id)) {
-            this.joiningPool.delete(socket.id);
+        if (chatData.joiningPool.has(socket.id)) {
+            chatData.joiningPool.delete(socket.id);
         }
     }
 
