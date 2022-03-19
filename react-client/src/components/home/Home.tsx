@@ -30,7 +30,8 @@ export const Home: React.FC = () => {
         return (
             <ChatContext.Provider value={chatContextValue}>
                 <Chat>
-                    <MessageBox username={'anonymous'}/>
+                    {/* @ts-ignore */}
+                    <MessageBox username={SocketService.socket.id}/>
                 </Chat>
             </ChatContext.Provider>
         )
