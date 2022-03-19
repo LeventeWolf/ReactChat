@@ -18,12 +18,19 @@ export const Home: React.FC = () => {
     };
 
     useEffect(() => {
-        if (SocketService.socket) {
-            SocketService.socket.on('partner_found', (message) => {
-                setIsJoining(false);
-                setInRoom(true);
-            });
-        }
+        if (!SocketService.socket) return;
+
+        SocketService.socket.on('partner_found', (message) => {
+            setIsJoining(false);
+            setInRoom(true);
+        });
+
+
+        return (() => {
+            if (!SocketService.socket) return;
+
+            SocketService.socket.off('partner_found');
+        })
     }, [])
 
     if (isInRoom) {

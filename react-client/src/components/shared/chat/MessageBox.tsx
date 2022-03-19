@@ -20,8 +20,8 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     useEffect(() => {
         if (!SocketService.socket) return;
 
-        SocketService.socket.on('chat_message', (message) => {
-            all_messages.unshift(message.message);
+        SocketService.socket.on('chat_message', (response) => {
+            all_messages.unshift(response.message);
             setMessages([...all_messages])
         });
 
@@ -34,7 +34,7 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         return () => {
             if (!SocketService.socket) return
 
-            SocketService.socket.emit('leave_chat');
+            SocketService.socket.emit('disconnect_random_chat');
             SocketService.socket.off('chat_message');
         }
     }, [])

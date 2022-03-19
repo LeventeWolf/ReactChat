@@ -1,6 +1,7 @@
 import * as express from "express";
-import chatData from "../api/data/chatDataHandler";
+import chatData from "../api/services/chatDataHandler";
 import {log} from "../lib/logger";
+import socketService from "../api/services/socketLoggerService";
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.get("/api/joining-pool", function (req, res, next) {
 
 router.get("/api/sockets", function (req, res, next) {
     try {
-        const result = Array.from(chatData.allSockets);
+        const result = Array.from(socketService.socketsData);
         return res.send({'connectedSockets': result}).end();
     } catch (e) {
         console.log(e)

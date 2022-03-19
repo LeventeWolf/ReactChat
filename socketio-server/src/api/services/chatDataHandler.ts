@@ -8,12 +8,6 @@ class ChatData {
     public rooms = {}
     public joiningAdapterRooms = new Map();
     public joiningPool = new Set();
-    public allSockets = new Set();
-
-
-    getUserBySocket(socketId) {
-        return this.users.find(user => user.id === socketId);
-    }
 
     createNewRoom(roomId: string, capacity=1000, visibility='public') {
         if (this.rooms[roomId]) {
@@ -52,9 +46,6 @@ class ChatData {
         this.joiningAdapterRooms = rooms;
     }
 
-    // joinRandomRoom(io: Socket, socketId: string) {
-    //     this.createNewRoom(socketId, 2, 'private');
-    // }
 }
 
 
