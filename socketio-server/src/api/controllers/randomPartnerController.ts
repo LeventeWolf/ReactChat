@@ -26,20 +26,68 @@ function delay(delayInms) {
 @SocketController()
 export class RandomPartnerController {
 
+    private joiningPool = new Set();
+
     @OnMessage("join_random_room")
     public async joinRandomRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        log(`Joining random room: ${socket.id}`);
+
+        this.joiningPool.add(socket.id);
+
         try {
-            chatData.joinRandomRoom(socket.id);
-            await delay(1000);
-            io.emit('partner_found');
-        } catch (e) {
-            io.emit('room_error', {
-                error: {
-                    type: e.name,
-                    message: e.message
+            const connectedSockets = io.sockets.adapter.rooms;
+
+            log('-- Available Rooms --')
+            Array.from(connectedSockets).forEach((dict, index) => {
+                const key = dict[0];
+                const sockets = dict[1];
+
+                if (this.joiningPool.has(key) && socket.id !== dict[0] && sockets.size < 2) {
+                    socket.join(key);
+                    io.to(key).emit('partner_found');
+
+                    console.log(`${socket.id} joined to room: ${key}`)
+                    console.log(`${index}. ${key} -`, Array.from(sockets).map(value => value));
+                    sockets.forEach(socketId => {
+                        this.joiningPool.delete(socketId);
+                    })
+                    return;
                 }
-            });
-            log('#Joining new room err.: ' + e.message)
+            })
+
+
+            console.log()
+
+            // console.log(`available rooms:`);
+            // socketRooms.forEach(room => {
+            //     console.log(` ${room}`)
+            // });
+        } catch (e) {
+            console.log(e)
+        }
+
+        // const socketRooms = Array.from(connectedSockets.values()).filter((r) => r !== socket.id);
+
+    }
+
+
+    /**
+     * Handles the following cleanups when a socket had been disconnected
+     * 1. If the socket was searching for partner: remove it from joingPool
+     * 2. If the socket was in a room: remove it from the room,
+     *  then alert partner that he left
+     * @param io
+     * @param socket
+     */
+    @OnMessage("disconnect")
+    public async handleDisconnect(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+        // TODO if socket was in room, emit user that he left
+
+
+        // if he was searching, remove him from joiningPool
+        if (this.joiningPool.has(socket.id)) {
+            this.joiningPool.delete(socket.id);
         }
     }
+
 }

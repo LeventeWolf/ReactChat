@@ -1,4 +1,5 @@
 import {MessageType} from "../controllers/chatController";
+import {Socket} from "socket.io";
 
 
 class ChatData {
@@ -10,7 +11,7 @@ class ChatData {
         return this.users.find(user => user.id === socketId);
     }
 
-    createNewRoom(roomId: string, capacity=1000) {
+    createNewRoom(roomId: string, capacity=1000, visibility='public') {
         if (this.rooms[roomId]) {
             throw {
                 name: 'room_exists_error',
@@ -22,7 +23,7 @@ class ChatData {
             sockets: [],
             messages: [],
             capacity: 1000,
-            visibility: 'public',
+            visibility,
         };
     }
 
@@ -43,9 +44,9 @@ class ChatData {
         this.rooms[roomId].sockets.push(socket);
     }
 
-    joinRandomRoom(socketId: string) {
-        this.createNewRoom(socketId)
-    }
+    // joinRandomRoom(io: Socket, socketId: string) {
+    //     this.createNewRoom(socketId, 2, 'private');
+    // }
 }
 
 
