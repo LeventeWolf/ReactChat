@@ -11,7 +11,7 @@ type MessageBoxPropTypes = {
     username: string,
 }
 
-const global_messages: MessageType[] = [];
+const all_messages: MessageType[] = [];
 
 export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     const [messages, setMessages] = useState<MessageType[]>([]);
@@ -21,8 +21,8 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         if (!SocketService.socket) return;
 
         SocketService.socket.on('chat_message', (message) => {
-            global_messages.unshift(message.message);
-            setMessages([...global_messages]);
+            all_messages.unshift(message.message);
+            setMessages([...all_messages])
         });
 
         inputChatRef.current.addEventListener('keypress',  async (event) => {
@@ -32,10 +32,10 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         });
 
         return () => {
-            if (SocketService.socket) {
-                // SocketService.socket.emit('leave_chat', {username});
-                SocketService.socket.off('chat_message');
-            }
+            if (!SocketService.socket) return
+            // SocketService.socket.emit('leave_chat', {username});
+            SocketService.socket.off('chat_message');
+
         }
     }, [])
 
