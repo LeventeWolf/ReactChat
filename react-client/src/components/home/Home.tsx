@@ -4,33 +4,41 @@ import './home.scss';
 import Chat from "../shared/chat/Chat";
 import ChatContext, {ChatContextProps} from "./chatContext";
 import SocketService from "../../services/socketService";
-import EnterUsername from "../shared/chat/EnterUsername";
 import MessageBox from "../shared/chat/MessageBox";
-import AvailableUsers from "../allChat/AvailableUsers";
 
 export const Home: React.FC = () => {
     const [isInRoom, setInRoom] = useState<boolean>(false);
     const [isJoining, setIsJoining] = useState<boolean>(false);
+    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
 
     const chatContextValue: ChatContextProps = {
         isInRoom, setInRoom,
         isJoining, setIsJoining,
+        // partnerLeft, setPartnerLeft,
     };
 
+
     useEffect(() => {
-        if (SocketService.socket) {
-            SocketService.socket.on('partner_found', (message) => {
-                setIsJoining(false);
-                setInRoom(true);
-            });
-        }
+        if (!SocketService.socket) return;
+
+        SocketService.socket.on('partner_found', (message) => {
+            setIsJoining(false);
+            setInRoom(true);
+        });
+
+
+        return (() => {
+            if (!SocketService.socket) return;
+            SocketService.socket.off('partner_found');
+        })
     }, [])
 
     if (isInRoom) {
         return (
             <ChatContext.Provider value={chatContextValue}>
                 <Chat>
-                    <MessageBox username={'anonymous'}/>
+                    {/* @ts-ignore */}
+                    <MessageBox username={SocketService.socket.id}/>
                 </Chat>
             </ChatContext.Provider>
         )

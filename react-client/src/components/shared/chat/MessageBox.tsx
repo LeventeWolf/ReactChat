@@ -10,52 +10,75 @@ type MessageBoxPropTypes = {
     username: string,
 }
 
+const all_messages: MessageType[] = [];
+
 export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     const [messages, setMessages] = useState<MessageType[]>([]);
     const inputChatRef = useRef<HTMLInputElement>(document.createElement("input"));
+    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
+
 
     useEffect(() => {
-        inputChatRef.current.addEventListener('keypress',  async (event) => {
+        if (!SocketService.socket) return;
+
+        SocketService.socket.on('chat_message', (response) => {
+            all_messages.unshift(response.message);
+            setMessages([...all_messages])
+        });
+
+        SocketService.socket.on('partner_left', (response) => {
+            all_messages.unshift(response.message);
+            setMessages([...all_messages])
+            setPartnerLeft(true);
+
+            if (inputChatRef.current) {
+                inputChatRef.current.removeEventListener('keypress', sendMessageOnEnter);
+            }
+
+            if (!SocketService.socket) return;
+            SocketService.socket.off('partner_left');
+            SocketService.socket.off('chat_message');
+        });
+
+
+        if (inputChatRef.current) {
+            inputChatRef.current.addEventListener('keypress',  sendMessageOnEnter);
+        }
+
+        async function sendMessageOnEnter(event: any) {
             if (event.key === 'Enter') {
                 handleSendMessage();
             }
-        });
-
-        if (SocketService.socket) {
-            SocketService.socket.emit('chat_message');
-            SocketService.socket.on('chat_message', (message) => {
-                setMessages(message.messages);
-            });
         }
 
         return () => {
-            if (SocketService.socket) {
-                SocketService.socket.emit('leave_chat', {username});
-                SocketService.socket.off('chat_message');
-            }
+            if (!SocketService.socket) return
+
+            SocketService.socket.emit('leave_random_chat');
+            SocketService.socket.off('chat_message');
         }
     }, [])
 
     function handleSendMessage() {
         if (!inputChatRef.current.value) return;
+        if (!SocketService.socket) return;
 
-        const messageData: MessageType = {
+        SocketService.socket.emit('chat_message',  {
             type: 'message',
             content: {
-                messageValue: inputChatRef.current.value,
+            messageValue: inputChatRef.current.value,
                 username,
                 date: new Date().toTimeString().split(' ')[0],
             }
-        }
-
-        setMessages([messageData, ...messages]);
-
-        if (SocketService.socket) {
-            SocketService.socket.emit('chat_message', messageData);
-        }
+        });
+        console.log('emitting message!');
 
         inputChatRef.current.value = '';
         return;
+    }
+
+    function handleLeave() {
+        window.location.reload(false);
     }
 
     return (
@@ -67,13 +90,20 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
             </div>
 
             <div className="message-send-wrap">
-                <span className="username">user: {username}</span>
-                <input type="text" className="form-control send-message" placeholder="Send something nice!"
-                       ref={inputChatRef}/>
-                <button type="button" className="btn btn-outline-secondary"
-                        onClick={handleSendMessage}>Send
-                </button>
+                {/*<span className="username">user: {username}</span>*/}
+                {partnerLeft ?
+                    <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
+                    :
+                    <>
+                        <input type="text" className="form-control send-message" placeholder="Say something nice!"
+                               ref={inputChatRef}/>
+                        <button type="button" className="btn btn-outline-secondary"
+                                onClick={handleSendMessage}>Send
+                        </button>
+                    </>
+                }
             </div>
+
         </div>
     );
 }

@@ -1,6 +1,6 @@
 .chat-box {
     position: relative;
-    height: 600px;
+    height: 50%;
     width: 100%;
     padding: 10px;
 
@@ -11,14 +11,21 @@
     grid-column-start: 2;
 }
 
+@media (max-width: 1000px) {
+    .chat-box {
+        height: 70%;
+    }
+}
+
+
 /* Input */
 
 .message-send-wrap {
     justify-content: center;
     position: absolute;
     bottom: 0;
-    width: 100%;
     display: flex;
+    width: 100%;
 }
 
 .send-message {
@@ -88,4 +95,9 @@
     height: 40px;
 
     color: grey;
+}
+
+.btn-leave-chat {
+    margin-bottom: 20px;
+    padding: 5px 20px;
 }

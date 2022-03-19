@@ -1,7 +1,7 @@
 import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import {Server, Socket} from "socket.io";
 import {log} from '../../lib/logger';
-import chatData from '../data/chatDataHandler'
+import chatData from '../services/chatDataHandler'
 
 type User = {
     id: string,

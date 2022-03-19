@@ -6,10 +6,8 @@ class ChatData {
     public messages: MessageType[] = [];
     public users = [{id: 'socket_id_12345', username: 'Big Brother 👀', isInRoom: true}];
     public rooms = {}
-
-    getUserBySocket(socketId) {
-        return this.users.find(user => user.id === socketId);
-    }
+    public joiningAdapterRooms = new Map();
+    public joiningPool = new Set();
 
     createNewRoom(roomId: string, capacity=1000, visibility='public') {
         if (this.rooms[roomId]) {
@@ -44,9 +42,10 @@ class ChatData {
         this.rooms[roomId].sockets.push(socket);
     }
 
-    // joinRandomRoom(io: Socket, socketId: string) {
-    //     this.createNewRoom(socketId, 2, 'private');
-    // }
+    setAdapterRooms(rooms) {
+        this.joiningAdapterRooms = rooms;
+    }
+
 }
 
 

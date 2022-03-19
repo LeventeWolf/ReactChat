@@ -9,10 +9,13 @@ class SocketService {
         return new Promise((rs, rj) => {
             this.socket = io(url);
 
-            if (!this.socket) return rj();
+            if (!this.socket) {
+                console.log(rj);
+                return rj();
+            }
 
             this.socket.on("connect", () => {
-                console.log('Connected to https://localhost:9000')
+                console.log('Connected to http://localhost:9000')
                 rs(this.socket as Socket);
                 if (this.socket) {
                     console.log('Client id: ' + this.socket.id);
@@ -20,6 +23,7 @@ class SocketService {
             });
 
             this.socket.on("connect_error", (err) => {
+                console.log(err)
                 console.log('socket-io connection lost!')
             });
         });
