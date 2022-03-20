@@ -54,28 +54,28 @@ export class RoomController {
 
     @OnMessage("join_room")
     public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        logt(`#Joining to room [${message.roomId}] | Socket [${socket.id}]`)
+        console.log();
+        log(`Socket joined to room: '${message.roomId}' | ${socket.id}`)
 
         try {
             socket.join(message.roomId);
             socketLogger.joinRoom(socket.id, message.roomId);
             socketLogger.setRooms(io.sockets.adapter.rooms);
             socketLogger.setUsername(socket.id, message.username);
-            io.to(message.roomId).emit('chat_message', {
-                message: {
-                    type: 'join',
-                    content: {
-                        messageValue: 'joined the chat!',
-                        username: message.username,
-                        date: new Date().toTimeString().split(' ')[0],
-                    }
-                }
-            })
+
+            // Show other users a message: new user joined
+            await this.ioEmitChatMessage(io, message.roomId, this.userJoinedThRoomMessage(message.username));
+
+            // Updating AvailableUsers
             await this.ioEmitUsersToRoom(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
             await this.ioEmitError(io, e);
         }
+    }
+
+    private async ioEmitChatMessage(io: Server, roomId: string, message: any) {
+        io.to(roomId).emit('chat_message', message)
     }
 
 
@@ -95,12 +95,17 @@ export class RoomController {
 
             const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
             const users = sockets.map(socketId => socketLogger.getUsername(socketId));
-            logt(`#Users in room - '${roomId}': [${users}]`)
-            io.to(roomId).emit('update_users', {users});
+            await this.updateRoomUsers(io, roomId, users);
         } catch (e) {
             logt(e)
             await this.ioEmitError(io, e);
         }
+    }
+
+    private async updateRoomUsers(@SocketIO() io: Server, roomId: string, users: string[]) {
+        io.to(roomId).emit('update_users', {users});
+        logt(`Room updated: '${roomId}'`)
+        logt(`Room users  : [${users}]`)
     }
 
     /**
@@ -128,30 +133,59 @@ export class RoomController {
      */
     @OnMessage("disconnect")
     public async handleDisconnect(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
-        log(`#Disconnected Cleanup for [${socket.id}]`)
+        log(`Disconnect cleanup for [${socket.id}]`)
         const socketInfo = socketLogger.getSocket(socket.id);
 
-        if (socketInfo.data.inRoom) {
-            log(`Partner left from room: ${socketInfo.data.inRoom}`)
+        // Alert other users that user left!
+        const cleanUpIfJoinedRoom = async () => {
+            logt(`1. CleanUp: If user was in a room!`)
+            if (socketInfo.data.inRoom) {
+                logt(` + Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
+                await this.ioEmitChatMessage(io, socketInfo.data.inRoom, this.userLeftTheRoomMessage(socketInfo.data.username))
+            }
+        };
 
-            const response: MessageType = {
+        // if he was searching, remove him from joiningPool
+        function cleanUpSearchingForPartner() {
+            logt(`2. CleanUp: If user was searching!`)
+            if (chatData.joiningPool.has(socket.id)) {
+                logt(` + Deleted from searching user: ${socket.id}`)
+                chatData.joiningPool.delete(socket.id);
+            }
+        }
+
+        // Cleanup
+        await cleanUpIfJoinedRoom();
+        cleanUpSearchingForPartner();
+        socketData.removeSocket(socket.id);
+        console.log()
+    }
+
+
+    // Messages
+    private userJoinedThRoomMessage = (username: string) => {
+        return {
+            message: {
                 type: 'join',
                 content: {
-                    messageValue: 'left the chat!',
-                    username: socket.id,
+                    messageValue: 'joined the chat!',
+                    username,
                     date: new Date().toTimeString().split(' ')[0],
                 }
             }
-
-            io.to(socketInfo.data.inRoom).emit('partner_left', {message: response});
         }
+    }
 
-        // if he was searching, remove him from joiningPool
-        if (chatData.joiningPool.has(socket.id)) {
-            chatData.joiningPool.delete(socket.id);
+    private userLeftTheRoomMessage = (username: string) => {
+        return {
+            message: {
+                type: 'join',
+                content: {
+                    messageValue: 'left the chat!',
+                    username,
+                    date: new Date().toTimeString().split(' ')[0],
+                }
+            }
         }
-
-
-        socketData.removeSocket(socket.id);
     }
 }

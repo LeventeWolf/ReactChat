@@ -21,10 +21,6 @@ export const AllChatMessageBox: React.FC<PropTypes> = ( {username} ) => {
             all_messages.unshift(response.message);
             setMessages([...all_messages])
         });
-        socketService.socket.on('partner_left', (response) => {
-            all_messages.unshift(response.message);
-            setMessages([...all_messages])
-        });
         socketService.socket.on('room_error', (message) => {
             console.log(`[${message.error.type}] ${message.error.message}`)
         })
