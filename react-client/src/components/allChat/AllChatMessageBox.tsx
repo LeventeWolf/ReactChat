@@ -79,7 +79,7 @@ export const AllChatMessageBox: React.FC<PropTypes> = ( {username} ) => {
             </div>
 
             <div className="message-send-wrap">
-                <span className="username">user: {username}</span>
+                <span className="username">{username}</span>
                 <input type="text" className="form-control send-message" placeholder="Say something nice!"
                        ref={inputChatRef}/>
                 <button type="button" className="btn btn-outline-secondary"

@@ -13,9 +13,11 @@ export const AllChat = () => {
             {!isJoined ?
                 <EnterUsername setUsername={setUsername} setIsJoined={setIsJoined}/>
                 :
-                <AllChatMessageBox username={username}/>
+                <>
+                    <AllChatMessageBox username={username}/>
+                    <AvailableUsers />
+                </>
             }
-            <AvailableUsers />
         </Chat>
     );
 }

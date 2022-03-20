@@ -92,7 +92,7 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
             <div className="message-send-wrap">
                 {/*<span className="username">user: {username}</span>*/}
                 {partnerLeft ?
-                    <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
+                        <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
                     :
                     <>
                         <input type="text" className="form-control send-message" placeholder="Say something nice!"

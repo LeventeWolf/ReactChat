@@ -54,20 +54,26 @@ export class RoomController {
 
     @OnMessage("join_all_room")
     public async joinAllRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        logt(`#Joinnig to room [all] | Socket [${socket.id}]`)
+
+        const roomId = 'all';
+
         try {
-            socket.join('all');
-            log(`#Joined to Room [all] | Socket [${socket.id}]`)
-            socketLogger.joinRoom(socket.id, 'all');
+            socket.join(roomId);
+            socketLogger.joinRoom(socket.id, roomId);
             socketLogger.setRooms(io.sockets.adapter.rooms);
             socketLogger.setUsername(socket.id, message.username);
-            io.to('all').emit('update_joined', {message: {
+            io.to('all').emit('update_joined', {
+                message: {
                     type: 'join',
                     content: {
                         messageValue: 'joined the chat!',
                         username: message.username,
                         date: new Date().toTimeString().split(' ')[0],
                     }
-                }})
+                }
+            })
+            await this.ioEmitUsersToRoom(io, roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
             await this.ioEmitError(io, e);
@@ -75,51 +81,43 @@ export class RoomController {
     }
 
 
-    // @OnMessage("update_users")
-    // public async updateAllChatUsers(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    //     if (!io.sockets.adapter.rooms.get('all')) return;
-    //
-    //     try {
-    //         const sockets = Array.from(io.sockets.adapter.rooms.get('all').values());
-    //
-    //         log('#All users:');
-    //         const users = sockets.map(socketId => socketLogger.getUsername(socketId));
-    //         console.log(users)
-    //         log('#Emitting all-chat users!')
-    //         io.emit('get_all_chat_users', {users});
-    //     } catch (e) {
-    //         await this.ioEmitError(io, e);
-    //         log('error: ' + e)
-    //     }
-    // }
-
-    @OnMessage("get_users_by_room")
-    public async getUsersByRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        log(`# Emitting users in room: ${message.roomId}`);
-
-        await this.emitUsersInRoom(io, socket, message.roomId);
-    }
-
-    private async emitUsersInRoom(io: Server, socket: Socket, roomId: string) {
+    /**
+     * Update <AvailableUsers /> users when a user is joined to the chat
+     * @param io
+     * @param roomId
+     * @private
+     */
+    private async ioEmitUsersToRoom(io: Server, roomId: string) {
         try {
             if (!io.sockets.adapter.rooms.get(roomId)) {
                 logt(`all not created yet, sending back []`)
-                socket.emit('update_users', {users: []});
+                io.to(roomId).emit('update_users', {users: []});
                 return;
             }
 
             const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
             const users = sockets.map(socketId => socketLogger.getUsername(socketId));
-            logt(`#Users in room - 'all': [${users}]`)
-            socket.emit('update_users', {users});
+            logt(`#Users in room - '${roomId}': [${users}]`)
+            io.to(roomId).emit('update_users', {users});
         } catch (e) {
             logt(e)
             await this.ioEmitError(io, e);
         }
     }
 
+    /**
+     * Emit possible errors <br>
+     * ev: 'room_error'
+     * @param io
+     * @param exception
+     */
     public async ioEmitError(@SocketIO() io: Server, exception: any) {
-        io.emit('room_error', {error: {type: exception.name, message: exception.message}});
+        io.emit('room_error', {
+            error: {
+                type: exception.name
+                , message: exception.message
+            }
+        });
     }
 
     /**
