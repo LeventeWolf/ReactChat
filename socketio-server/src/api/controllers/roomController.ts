@@ -67,9 +67,8 @@ export class RoomController {
 
         // Emit message '<username> left the room'!
         const emitLeftTheRoomMessage = async () => {
-            logt(`1. CleanUp: Remove from room!`)
             if (socketInfo.data.inRoom) {
-                logt(` + Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
+                logt(`CleanUp: Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
                 await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, userLeftTheRoomMessage(socketInfo.data.username))
             }
         };

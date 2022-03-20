@@ -1,10 +1,11 @@
-import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} from "socket-controllers";
+import {ConnectedSocket, MessageBody, OnDisconnect, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import {Server, Socket} from "socket.io";
 import {log} from '../../lib/logger';
 import chatData from '../services/chatDataHandler'
 import socketLogger from "../services/socketLoggerService";
 import socketData from "../services/socketLoggerService";
 import {MessageType} from "./chatController";
+import {userLeftTheRoomMessage} from "../constants/chatMessageConstants";
 
 type User = {
     id: string,
@@ -43,6 +44,7 @@ export class RandomChatController {
                 // Join to private room (limit: 2)
                 if (chatData.joiningPool.has(roomId) && socket.id !== dict[0] && sockets.size < 2) {
                     socket.join(roomId);
+                    socketLogger.updateRooms(io.sockets.adapter.rooms);
                     socketLogger.updateSocketInRoom(socket.id, roomId) // new user who joined
                     socketLogger.updateSocketInRoom(roomId, roomId) // user that already in room
                     io.to(roomId).emit('partner_found');
@@ -61,6 +63,16 @@ export class RandomChatController {
         chatData.setAdapterRooms(io.sockets.adapter.rooms)
     }
 
+
+    @OnMessage('leave_random_chat')
+    public async emitPartnerLeft(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+        const socketInfo = socketLogger.getSocket(socket.id);
+
+        if (socketInfo.data.inRoom) {
+
+        }
+    }
+
     /**
      * Handles the following cleanups when a socket had been disconnected
      * 1. If the socket was searching for partner: remove it from joingPool
@@ -69,23 +81,14 @@ export class RandomChatController {
      * @param io
      * @param socket
      */
+    @OnDisconnect()
     @OnMessage("leave_random_chat")
     public async handleLeave(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
         const socketInfo = socketLogger.getSocket(socket.id);
 
         if (socketInfo.data.inRoom) {
-            log(`Partner left from room: ${socketInfo.data.inRoom}`)
-
-            const message: MessageType = {
-                type: 'join',
-                content: {
-                    messageValue: 'left the chat!',
-                    username: 'partner',
-                    date: new Date().toTimeString().split(' ')[0],
-                }
-            }
-
-            io.to(socketInfo.data.inRoom).emit('partner_left', {message});
+            log(`CleanUp: Socket left from room: ${socketInfo.data.inRoom}`)
+            io.to(socketInfo.data.inRoom).emit('partner_left', userLeftTheRoomMessage('partner'));
         }
     }
 }
