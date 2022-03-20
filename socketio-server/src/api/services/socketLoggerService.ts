@@ -6,6 +6,7 @@ interface SocketData {
 interface SocketInfo {
     data: {
         inRoom: string | undefined;
+        username: string,
     }
 }
 
@@ -17,6 +18,7 @@ class SocketLogger {
         this.socketsData.set(socketId, {
             data: {
                 inRoom: '',
+                username: '',
             }
         })
     }
@@ -63,6 +65,16 @@ class SocketLogger {
     setRooms(rooms: Map<string, Set<string>>) {
         this.rooms = rooms;
     }
+
+    getUsername(socketId) {
+        return this.getSocket(socketId).data.username;
+    }
+
+    setUsername(socketId: string, username: string) {
+        const socket = this.getSocket(socketId);
+        socket.data.username = username;
+    }
+
 }
 
 

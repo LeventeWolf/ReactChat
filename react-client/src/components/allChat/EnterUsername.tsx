@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import './enterUsername.scss'
-import SocketService from "../../../services/socketService";
-import {MessageType} from "./Chat";
+import SocketService from "../../services/socketService";
+import {MessageType} from "../shared/chat/Chat";
 
 type EnterUsernamePropTypes = {
     setIsJoined: any,
@@ -19,7 +19,7 @@ const EnterUsername: React.FC<EnterUsernamePropTypes> = ({setIsJoined, setUserna
         }
 
         if (SocketService.socket) {
-            SocketService.socket.emit('join_chat', {username})
+            SocketService.socket.emit('join_all_room', {username})
             setIsJoined(true);
             setUsername(username);
 

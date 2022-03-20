@@ -1,6 +1,6 @@
 import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import {Server, Socket} from "socket.io";
-import {log} from '../../lib/logger';
+import {log, logt} from '../../lib/logger';
 import chatData from '../services/chatDataHandler'
 import socketLogger from "../services/socketLoggerService";
 import {MessageType} from "./chatController";
@@ -59,16 +59,61 @@ export class RoomController {
             log(`#Joined to Room [all] | Socket [${socket.id}]`)
             socketLogger.joinRoom(socket.id, 'all');
             socketLogger.setRooms(io.sockets.adapter.rooms);
+            socketLogger.setUsername(socket.id, message.username);
             io.to('all').emit('update_joined', {message: {
                     type: 'join',
                     content: {
                         messageValue: 'joined the chat!',
-                        username: socket.id,
+                        username: message.username,
                         date: new Date().toTimeString().split(' ')[0],
                     }
                 }})
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
+            await this.ioEmitError(io, e);
+        }
+    }
+
+
+    // @OnMessage("update_users")
+    // public async updateAllChatUsers(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+    //     if (!io.sockets.adapter.rooms.get('all')) return;
+    //
+    //     try {
+    //         const sockets = Array.from(io.sockets.adapter.rooms.get('all').values());
+    //
+    //         log('#All users:');
+    //         const users = sockets.map(socketId => socketLogger.getUsername(socketId));
+    //         console.log(users)
+    //         log('#Emitting all-chat users!')
+    //         io.emit('get_all_chat_users', {users});
+    //     } catch (e) {
+    //         await this.ioEmitError(io, e);
+    //         log('error: ' + e)
+    //     }
+    // }
+
+    @OnMessage("get_users_by_room")
+    public async getUsersByRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        log(`# Emitting users in room: ${message.roomId}`);
+
+        await this.emitUsersInRoom(io, socket, message.roomId);
+    }
+
+    private async emitUsersInRoom(io: Server, socket: Socket, roomId: string) {
+        try {
+            if (!io.sockets.adapter.rooms.get(roomId)) {
+                logt(`all not created yet, sending back []`)
+                socket.emit('update_users', {users: []});
+                return;
+            }
+
+            const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
+            const users = sockets.map(socketId => socketLogger.getUsername(socketId));
+            logt(`#Users in room - 'all': [${users}]`)
+            socket.emit('update_users', {users});
+        } catch (e) {
+            logt(e)
             await this.ioEmitError(io, e);
         }
     }
@@ -84,7 +129,6 @@ export class RoomController {
      *  then alert partner that he left
      * @param io
      * @param socket
-     * @param message
      */
     @OnMessage("disconnect")
     public async handleDisconnect(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
@@ -110,9 +154,6 @@ export class RoomController {
         if (chatData.joiningPool.has(socket.id)) {
             chatData.joiningPool.delete(socket.id);
         }
-
-
-
 
 
         socketData.removeSocket(socket.id);

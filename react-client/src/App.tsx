@@ -9,7 +9,7 @@ import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
 import Chat from "./components/shared/chat/Chat";
 import Home from "./components/home/Home";
-import EnterUsername from "./components/shared/chat/EnterUsername";
+import EnterUsername from "./components/allChat/EnterUsername";
 import MessageBox from "./components/shared/chat/MessageBox";
 import AvailableUsers from "./components/allChat/AvailableUsers";
 import AllChat from "./components/allChat/AllChat";

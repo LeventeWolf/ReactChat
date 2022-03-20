@@ -4,3 +4,10 @@ export function log(...args) {
 
     console.log(`[${f_date}] ${args}`)
 }
+
+export function logt(...args) {
+    const date = new Date().toTimeString();
+    const f_date = date.split(' ')[0];
+
+    console.log(`           ${args}`)
+}

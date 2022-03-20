@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import './availableUsers.scss';
-import SocketService from "../../services/socketService";
 import { v4 } from "uuid";
+import socketService from "../../services/socketService";
 
 type PropTypes = {
 
@@ -11,17 +11,14 @@ export const AvailableUsers: React.FC<PropTypes> = () => {
     const [availableUsers, setAvailableUsers] = useState<String[]>([]);
 
     useEffect(() => {
-        if (SocketService.socket) {
-            SocketService.socket.on('join_chat', (response) => {
-                setAvailableUsers(response.users)
-            });
-        }
-    }, [SocketService.socket])
+        if (!socketService.socket) return;
 
-    useEffect(() => {
-        if (SocketService.socket) {
-            SocketService.socket.emit('get_users');
-        }
+        console.log('sending request for all users!')
+        socketService.socket.emit('get_users_by_room', {roomId: 'all'});
+        socketService.socket.on('update_users', (response) => {
+            setAvailableUsers([...response.users])
+        });
+
     }, [])
 
 

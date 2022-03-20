@@ -1,5 +1,5 @@
 import Chat from "../shared/chat/Chat";
-import EnterUsername from "../shared/chat/EnterUsername";
+import EnterUsername from "./EnterUsername";
 import AvailableUsers from "./AvailableUsers";
 import React, {useState} from "react";
 import AllChatMessageBox from "./AllChatMessageBox";
