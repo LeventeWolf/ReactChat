@@ -5,6 +5,7 @@ import chatData from '../services/chatDataHandler'
 import socketLogger from "../services/socketLoggerService";
 import {ioEmitChatMessageToRoom} from "./chatController";
 import socketData from "../services/socketLoggerService";
+import {userJoinedTheRoomMessage, userLeftTheRoomMessage} from "../constants/chatMessageConstants";
 
 type User = {
     id: string,
@@ -32,43 +33,14 @@ export class RoomController {
             socketLogger.setUsername(socket.id, message.username);
 
             // Show other users a message: new user joined
-            await ioEmitChatMessageToRoom(io, message.roomId, this.userJoinedThRoomMessage(message.username));
+            await ioEmitChatMessageToRoom(io, message.roomId, userJoinedTheRoomMessage(message.username));
 
             // Updating AvailableUsers
-            await this.ioEmitUsersToRoom(io, message.roomId)
+            await ioEmitUsersToRoom(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
             await ioEmitError(io, e);
         }
-    }
-
-    /**
-     * Update <AvailableUsers /> users when a user is joined to the chat
-     * @param io
-     * @param roomId
-     * @private
-     */
-    private async ioEmitUsersToRoom(io: Server, roomId: string) {
-        try {
-            if (!io.sockets.adapter.rooms.get(roomId)) {
-                logt(`all not created yet, sending back []`)
-                io.to(roomId).emit('update_users', {users: []});
-                return;
-            }
-
-            const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
-            const users = sockets.map(socketId => socketLogger.getUsername(socketId));
-            await this.updateRoomUsers(io, roomId, users);
-        } catch (e) {
-            logt(e)
-            await ioEmitError(io, e);
-        }
-    }
-
-    private async updateRoomUsers(@SocketIO() io: Server, roomId: string, users: string[]) {
-        io.to(roomId).emit('update_users', {users});
-        logt(`Room updated: '${roomId}'`)
-        logt(`Room users  : [${users}]`)
     }
 
     /**
@@ -80,7 +52,7 @@ export class RoomController {
      * @param socket
      */
     @OnMessage("disconnect")
-    public async handleDisconnect(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+    public async cleanUp(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
         log(`Disconnect cleanup for [${socket.id}]`)
         const socketInfo = socketLogger.getSocket(socket.id);
 
@@ -89,7 +61,7 @@ export class RoomController {
             logt(`1. CleanUp: If user was in a room!`)
             if (socketInfo.data.inRoom) {
                 logt(` + Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
-                await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, this.userLeftTheRoomMessage(socketInfo.data.username))
+                await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, userLeftTheRoomMessage(socketInfo.data.username))
             }
         };
 
@@ -108,36 +80,26 @@ export class RoomController {
         socketData.removeSocket(socket.id);
         console.log()
     }
-
-
-    // Messages
-    private userJoinedThRoomMessage = (username: string) => {
-        return {
-            message: {
-                type: 'join',
-                content: {
-                    messageValue: 'joined the chat!',
-                    username,
-                    date: new Date().toTimeString().split(' ')[0],
-                }
-            }
-        }
-    }
-
-    private userLeftTheRoomMessage = (username: string) => {
-        return {
-            message: {
-                type: 'join',
-                content: {
-                    messageValue: 'left the chat!',
-                    username,
-                    date: new Date().toTimeString().split(' ')[0],
-                }
-            }
-        }
-    }
 }
 
+/**
+ * Update <AvailableUsers /> users when a user is joined to the chat
+ * @param io
+ * @param roomId
+ * @private
+ */
+async function ioEmitUsersToRoom(io: Server, roomId: string) {
+    try {
+        const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
+        const users = sockets.map(socketId => socketLogger.getUsername(socketId));
+        io.to(roomId).emit('update_users', {users});
+        logt(`Room updated: '${roomId}'`)
+        logt(`Room users  : [${users}]`)
+    } catch (e) {
+        logt(e)
+        await ioEmitError(io, e);
+    }
+}
 
 /**
  * Emit possible errors <br>
