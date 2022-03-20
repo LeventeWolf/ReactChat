@@ -16,24 +16,15 @@ export const AllChatMessageBox: React.FC<PropTypes> = ( {username} ) => {
 
     useEffect(() => {
         if (!socketService.socket) return;
-        socketService.socket.emit('join_all_room', {username});
-
+        socketService.socket.emit('join_room', {username, roomId: 'all'});
         socketService.socket.on('chat_message', (response) => {
             all_messages.unshift(response.message);
             setMessages([...all_messages])
         });
-
-        socketService.socket.on('update_joined', (response) => {
-            all_messages.unshift(response.message);
-            setMessages([...all_messages])
-        });
-
         socketService.socket.on('partner_left', (response) => {
             all_messages.unshift(response.message);
             setMessages([...all_messages])
         });
-
-
         socketService.socket.on('room_error', (message) => {
             console.log(`[${message.error.type}] ${message.error.message}`)
         })
@@ -49,6 +40,8 @@ export const AllChatMessageBox: React.FC<PropTypes> = ( {username} ) => {
 
             socketService.socket.emit('leave_chat');
             socketService.socket.off('chat_message');
+            socketService.socket.off('update_joined');
+            socketService.socket.off('partner_left');
             socketService.socket.off('room_error');
         }
     }, [])

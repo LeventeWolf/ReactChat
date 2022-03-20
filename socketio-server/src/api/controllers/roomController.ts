@@ -38,32 +38,30 @@ export class RoomController {
         io.emit('update_rooms', {rooms: chatData.rooms})
     }
 
+    // @OnMessage("join_room")
+    // public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+    //     try {
+    //         chatData.joinRoom(message.roomId, socket.id);
+    //         await this.ioEmitRooms(io);
+    //
+    //         io.emit('update_joined', {status: 200})
+    //         log(`#Joining new room\n socket=${socket}\n room=${message.roomId}`)
+    //     } catch (e) {
+    //         await this.ioEmitError(io, e);
+    //         log('#Joining new room err.: ' + e.message)
+    //     }
+    // }
+
     @OnMessage("join_room")
     public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        try {
-            chatData.joinRoom(message.roomId, socket.id);
-            await this.ioEmitRooms(io);
-
-            io.emit('update_joined', {status: 200})
-            log(`#Joining new room\n socket=${socket}\n room=${message.roomId}`)
-        } catch (e) {
-            await this.ioEmitError(io, e);
-            log('#Joining new room err.: ' + e.message)
-        }
-    }
-
-    @OnMessage("join_all_room")
-    public async joinAllRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        logt(`#Joinnig to room [all] | Socket [${socket.id}]`)
-
-        const roomId = 'all';
+        logt(`#Joining to room [${message.roomId}] | Socket [${socket.id}]`)
 
         try {
-            socket.join(roomId);
-            socketLogger.joinRoom(socket.id, roomId);
+            socket.join(message.roomId);
+            socketLogger.joinRoom(socket.id, message.roomId);
             socketLogger.setRooms(io.sockets.adapter.rooms);
             socketLogger.setUsername(socket.id, message.username);
-            io.to('all').emit('update_joined', {
+            io.to(message.roomId).emit('chat_message', {
                 message: {
                     type: 'join',
                     content: {
@@ -73,7 +71,7 @@ export class RoomController {
                     }
                 }
             })
-            await this.ioEmitUsersToRoom(io, roomId)
+            await this.ioEmitUsersToRoom(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
             await this.ioEmitError(io, e);
