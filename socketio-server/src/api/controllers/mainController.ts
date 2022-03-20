@@ -12,7 +12,7 @@ export class MainController {
     }
 
     @OnDisconnect()
-    public onDisconnection(@ConnectedSocket() socket: Socket, @SocketIO() io: Server) {
-
+    public async disconnect(@SocketIO() io: Server, @ConnectedSocket() socket: any) {
+        log('Disconnected socket ' + socket.id)
     }
 }

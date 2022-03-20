@@ -16,17 +16,16 @@ export interface MessageType {
 export class ChatController {
 
     @OnMessage("chat_message")
-    public async updateRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        Array.from(socket.rooms).forEach(room => {
-            const adapter_room = io.sockets.adapter.rooms.get(room);
-            if (room === socket.id && adapter_room.size === 1) return;
-
-            io.to(room).emit('chat_message', {message});
+    public async ioEmitMessageToRooms(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        // Send message to all rooms, except: personal room where user is alone
+        Array.from(socket.rooms).forEach(roomId => {
+            const adapter_room = io.sockets.adapter.rooms.get(roomId);
+            if (roomId === socket.id && adapter_room.size === 1) return;
+            ioEmitChatMessageToRoom(io, roomId, {message});
         })
     }
+}
 
-    @OnDisconnect()
-    public async disconnect(@SocketIO() io: Server, @ConnectedSocket() socket: any) {
-        log('Disconnected socket ' + socket.id)
-    }
+export async function ioEmitChatMessageToRoom(io: Server, roomId: string, message: any) {
+    io.to(roomId).emit('chat_message', message)
 }

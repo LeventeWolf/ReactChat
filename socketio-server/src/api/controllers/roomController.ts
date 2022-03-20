@@ -3,7 +3,7 @@ import {Server, Socket} from "socket.io";
 import {log, logt} from '../../lib/logger';
 import chatData from '../services/chatDataHandler'
 import socketLogger from "../services/socketLoggerService";
-import {MessageType} from "./chatController";
+import {ioEmitChatMessageToRoom} from "./chatController";
 import socketData from "../services/socketLoggerService";
 
 type User = {
@@ -20,38 +20,6 @@ type Room = {
 
 @SocketController()
 export class RoomController {
-
-    @OnMessage("new_room")
-    public async createNewRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-        try {
-            log(`#Creating new room: id=${message.roomId}`)
-            chatData.createNewRoom(message.roomId)
-            await this.ioEmitRooms(io)
-        } catch (e) {
-            await this.ioEmitError(io, e);
-            log('#Joining new room err.: ' + e.message)
-        }
-    }
-
-    @OnMessage("update_rooms")
-    public async ioEmitRooms(@SocketIO() io: Server) {
-        io.emit('update_rooms', {rooms: chatData.rooms})
-    }
-
-    // @OnMessage("join_room")
-    // public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
-    //     try {
-    //         chatData.joinRoom(message.roomId, socket.id);
-    //         await this.ioEmitRooms(io);
-    //
-    //         io.emit('update_joined', {status: 200})
-    //         log(`#Joining new room\n socket=${socket}\n room=${message.roomId}`)
-    //     } catch (e) {
-    //         await this.ioEmitError(io, e);
-    //         log('#Joining new room err.: ' + e.message)
-    //     }
-    // }
-
     @OnMessage("join_room")
     public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         console.log();
@@ -64,20 +32,15 @@ export class RoomController {
             socketLogger.setUsername(socket.id, message.username);
 
             // Show other users a message: new user joined
-            await this.ioEmitChatMessage(io, message.roomId, this.userJoinedThRoomMessage(message.username));
+            await ioEmitChatMessageToRoom(io, message.roomId, this.userJoinedThRoomMessage(message.username));
 
             // Updating AvailableUsers
             await this.ioEmitUsersToRoom(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
-            await this.ioEmitError(io, e);
+            await ioEmitError(io, e);
         }
     }
-
-    private async ioEmitChatMessage(io: Server, roomId: string, message: any) {
-        io.to(roomId).emit('chat_message', message)
-    }
-
 
     /**
      * Update <AvailableUsers /> users when a user is joined to the chat
@@ -98,7 +61,7 @@ export class RoomController {
             await this.updateRoomUsers(io, roomId, users);
         } catch (e) {
             logt(e)
-            await this.ioEmitError(io, e);
+            await ioEmitError(io, e);
         }
     }
 
@@ -106,21 +69,6 @@ export class RoomController {
         io.to(roomId).emit('update_users', {users});
         logt(`Room updated: '${roomId}'`)
         logt(`Room users  : [${users}]`)
-    }
-
-    /**
-     * Emit possible errors <br>
-     * ev: 'room_error'
-     * @param io
-     * @param exception
-     */
-    public async ioEmitError(@SocketIO() io: Server, exception: any) {
-        io.emit('room_error', {
-            error: {
-                type: exception.name
-                , message: exception.message
-            }
-        });
     }
 
     /**
@@ -141,7 +89,7 @@ export class RoomController {
             logt(`1. CleanUp: If user was in a room!`)
             if (socketInfo.data.inRoom) {
                 logt(` + Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
-                await this.ioEmitChatMessage(io, socketInfo.data.inRoom, this.userLeftTheRoomMessage(socketInfo.data.username))
+                await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, this.userLeftTheRoomMessage(socketInfo.data.username))
             }
         };
 
@@ -188,4 +136,20 @@ export class RoomController {
             }
         }
     }
+}
+
+
+/**
+ * Emit possible errors <br>
+ * ev: 'room_error'
+ * @param io
+ * @param exception
+ */
+export async function ioEmitError(io: Server, exception: any) {
+    io.emit('room_error', {
+        error: {
+            type: exception.name
+            , message: exception.message
+        }
+    });
 }
