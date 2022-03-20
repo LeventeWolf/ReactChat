@@ -27,20 +27,28 @@ export class RoomController {
         log(`Socket joined to room: '${message.roomId}' | ${socket.id}`)
 
         try {
-            socket.join(message.roomId);
-            socketLogger.joinRoom(socket.id, message.roomId);
-            socketLogger.setRooms(io.sockets.adapter.rooms);
-            socketLogger.setUsername(socket.id, message.username);
+            // Join room
+            this.joinToRoom(io, socket, message);
 
-            // Show other users a message: new user joined
+            // Emit message: '<username> joined the chat'
             await ioEmitChatMessageToRoom(io, message.roomId, userJoinedTheRoomMessage(message.username));
 
-            // Updating AvailableUsers
+            // Emit <username> to <AvailableUsers /> component
             await ioEmitUsersToRoom(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
             await ioEmitError(io, e);
         }
+    }
+
+    private joinToRoom(io: Server, socket: Socket, message: any) {
+        // Join to io.sockets.adapter.rooms
+        socket.join(message.roomId);
+
+        // Update logger
+        socketLogger.updateSocketInRoom(socket.id, message.roomId);
+        socketLogger.updateRooms(io.sockets.adapter.rooms);
+        socketLogger.updateUsername(socket.id, message.username);
     }
 
     /**

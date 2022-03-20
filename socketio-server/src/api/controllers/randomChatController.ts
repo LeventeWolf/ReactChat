@@ -43,8 +43,8 @@ export class RandomChatController {
                 // Join to private room (limit: 2)
                 if (chatData.joiningPool.has(roomId) && socket.id !== dict[0] && sockets.size < 2) {
                     socket.join(roomId);
-                    socketLogger.joinRoom(socket.id, roomId) // new user who joined
-                    socketLogger.joinRoom(roomId, roomId) // user that already in room
+                    socketLogger.updateSocketInRoom(socket.id, roomId) // new user who joined
+                    socketLogger.updateSocketInRoom(roomId, roomId) // user that already in room
                     io.to(roomId).emit('partner_found');
 
                     log(`Chat established: ${socket.id} - ${roomId}`)

@@ -36,7 +36,7 @@ class SocketLogger {
         return this.getSocket(socketId).data.inRoom;
     }
 
-    joinRoom(socketId: string, roomId: string): void {
+    updateSocketInRoom(socketId: string, roomId: string): void {
         const socket = this.getSocket(socketId);
 
         if (!socket) {
@@ -62,7 +62,7 @@ class SocketLogger {
         this.socketsData.delete(socketId);
     }
 
-    setRooms(rooms: Map<string, Set<string>>) {
+    updateRooms(rooms: Map<string, Set<string>>) {
         this.rooms = rooms;
     }
 
@@ -70,7 +70,7 @@ class SocketLogger {
         return this.getSocket(socketId).data.username;
     }
 
-    setUsername(socketId: string, username: string) {
+    updateUsername(socketId: string, username: string) {
         const socket = this.getSocket(socketId);
         socket.data.username = username;
     }
