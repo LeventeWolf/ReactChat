@@ -2,7 +2,7 @@ import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} fro
 import {Server, Socket} from "socket.io";
 import {log, logt} from "../../lib/logger";
 import chatData from "../services/chatDataHandler";
-import {ioEmitError} from "./roomController";
+import {ioEmitRoomError} from "./roomController";
 
 @SocketController()
 export class RoomCreatorController {
@@ -13,7 +13,7 @@ export class RoomCreatorController {
             chatData.createNewRoom(message.roomId)
             await this.ioEmitRoomNames(io);
         } catch (e) {
-            await ioEmitError(io, e);
+            await ioEmitRoomError(io, e);
             log('#Joining new room err.: ' + e.message)
         }
     }

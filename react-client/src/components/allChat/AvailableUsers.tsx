@@ -11,7 +11,6 @@ export const AvailableUsers: React.FC = () => {
         if (!socketService.socket) return;
 
         socketService.socket.on('update_users', (response) => {setAvailableUsers([...response.users])});
-        
         return () => {
             if (!socketService.socket) return;
 

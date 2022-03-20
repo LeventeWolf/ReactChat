@@ -6,6 +6,7 @@ import socketLogger from "../services/socketLoggerService";
 import {ioEmitChatMessageToRoom} from "./chatController";
 import socketData from "../services/socketLoggerService";
 import {userJoinedTheRoomMessage, userLeftTheRoomMessage} from "../constants/chatMessageConstants";
+import {ioEmitAvailableUsers} from "./availableUsersController";
 
 type User = {
     id: string,
@@ -27,23 +28,23 @@ export class RoomController {
         log(`Socket joined to room: '${message.roomId}' | ${socket.id}`)
 
         try {
-            // Join room
-            this.joinToRoom(io, socket, message);
+            // Socket join to specified room
+            this.joinToRoom(io, socket, message.roomId, message);
 
             // Emit message: '<username> joined the chat'
             await ioEmitChatMessageToRoom(io, message.roomId, userJoinedTheRoomMessage(message.username));
 
             // Emit <username> to <AvailableUsers /> component
-            await ioEmitUsersToRoom(io, message.roomId)
+            await ioEmitAvailableUsers(io, message.roomId)
         } catch (e) {
             log('#Joining new room err.: ' + e.message)
-            await ioEmitError(io, e);
+            await ioEmitRoomError(io, e);
         }
     }
 
-    private joinToRoom(io: Server, socket: Socket, message: any) {
+    private joinToRoom(io: Server, socket: Socket, roomId: string, message: any) {
         // Join to io.sockets.adapter.rooms
-        socket.join(message.roomId);
+        socket.join(roomId);
 
         // Update logger
         socketLogger.updateSocketInRoom(socket.id, message.roomId);
@@ -61,53 +62,35 @@ export class RoomController {
      */
     @OnMessage("disconnect")
     public async cleanUp(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
-        log(`Disconnect cleanup for [${socket.id}]`)
+        log(`Disconnect cleanup | ${socket.id}`)
         const socketInfo = socketLogger.getSocket(socket.id);
 
-        // Alert other users that user left!
-        const cleanUpIfJoinedRoom = async () => {
-            logt(`1. CleanUp: If user was in a room!`)
+        // Emit message '<username> left the room'!
+        const emitLeftTheRoomMessage = async () => {
+            logt(`1. CleanUp: Remove from room!`)
             if (socketInfo.data.inRoom) {
                 logt(` + Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
                 await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, userLeftTheRoomMessage(socketInfo.data.username))
             }
         };
 
-        // if he was searching, remove him from joiningPool
-        function cleanUpSearchingForPartner() {
-            logt(`2. CleanUp: If user was searching!`)
+        // TODO Extract to searchController
+        // if he was searching, remove him from searching pool
+        const deleteFromSearchingPool = async () => {
             if (chatData.joiningPool.has(socket.id)) {
-                logt(` + Deleted from searching user: ${socket.id}`)
+                logt(`CleanUp: Remove from searching users: ${socket.id}`)
                 chatData.joiningPool.delete(socket.id);
             }
         }
 
         // Cleanup
-        await cleanUpIfJoinedRoom();
-        cleanUpSearchingForPartner();
+        await emitLeftTheRoomMessage();
+        await deleteFromSearchingPool();
         socketData.removeSocket(socket.id);
         console.log()
     }
 }
 
-/**
- * Update <AvailableUsers /> users when a user is joined to the chat
- * @param io
- * @param roomId
- * @private
- */
-async function ioEmitUsersToRoom(io: Server, roomId: string) {
-    try {
-        const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
-        const users = sockets.map(socketId => socketLogger.getUsername(socketId));
-        io.to(roomId).emit('update_users', {users});
-        logt(`Room updated: '${roomId}'`)
-        logt(`Room users  : [${users}]`)
-    } catch (e) {
-        logt(e)
-        await ioEmitError(io, e);
-    }
-}
 
 /**
  * Emit possible errors <br>
@@ -115,11 +98,11 @@ async function ioEmitUsersToRoom(io: Server, roomId: string) {
  * @param io
  * @param exception
  */
-export async function ioEmitError(io: Server, exception: any) {
+export async function ioEmitRoomError(io: Server, exception: any) {
     io.emit('room_error', {
         error: {
-            type: exception.name
-            , message: exception.message
+            type: exception.name,
+            message: exception.message
         }
     });
 }
