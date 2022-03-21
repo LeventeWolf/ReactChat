@@ -9,7 +9,7 @@ export const AllChat = () => {
     const [isJoined, setIsJoined] = useState(false)
 
     return (
-        <Chat>
+        <div id="chat-container">
             {!isJoined ?
                 <EnterUsername setUsername={setUsername} setIsJoined={setIsJoined}/>
                 :
@@ -18,7 +18,7 @@ export const AllChat = () => {
                     <AvailableUsers />
                 </>
             }
-        </Chat>
+        </div>
     );
 }
 

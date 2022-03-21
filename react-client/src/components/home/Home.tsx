@@ -4,7 +4,7 @@ import './home.scss';
 import Chat from "../shared/chat/Chat";
 import ChatContext, {ChatContextProps} from "./chatContext";
 import SocketService from "../../services/socketService";
-import MessageBox from "../shared/chat/MessageBox";
+import Messages from "../shared/chat/Messages";
 
 export const Home: React.FC = () => {
     const [isInRoom, setInRoom] = useState<boolean>(false);
@@ -36,8 +36,7 @@ export const Home: React.FC = () => {
     if (isInRoom) {
         return (
             <ChatContext.Provider value={chatContextValue}>
-                {/* @ts-ignore */}
-                <MessageBox username={SocketService.socket.id}/>
+                <Chat />
             </ChatContext.Provider>
         )
     }
