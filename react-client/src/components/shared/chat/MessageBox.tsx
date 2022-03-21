@@ -3,7 +3,7 @@ import SocketService from "../../../services/socketService";
 import Message from "./Message";
 import {MessageType} from "./Chat";
 import './messages.scss'
-import { v4 } from "uuid";
+import {v4} from "uuid";
 
 
 type MessageBoxPropTypes = {
@@ -42,7 +42,7 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
 
         if (inputChatRef.current) {
-            inputChatRef.current.addEventListener('keypress',  sendMessageOnEnter);
+            inputChatRef.current.addEventListener('keypress', sendMessageOnEnter);
         }
 
         async function sendMessageOnEnter(event: any) {
@@ -64,10 +64,10 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         if (!inputChatRef.current.value) return;
         if (!SocketService.socket) return;
 
-        SocketService.socket.emit('chat_message',  {
+        SocketService.socket.emit('chat_message', {
             type: 'message',
             content: {
-            messageValue: inputChatRef.current.value,
+                messageValue: inputChatRef.current.value,
                 username,
                 date: new Date().toTimeString().split(' ')[0],
             }
@@ -84,27 +84,32 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
     return (
         <div className="chat-box">
-            <div className="messages-wrap">
+            <div className="messages">
                 {messages.map(messageData => {
                     return <Message key={v4()} owner={messageData.content.username === username} message={messageData}/>
                 })}
             </div>
 
-            <div className="message-send-wrap">
-                {/*<span className="username">user: {username}</span>*/}
-                {partnerLeft ?
-                        <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
-                    :
-                    <>
-                        <input type="text" className="form-control send-message" placeholder="Say something nice!"
+            {!partnerLeft ?
+                <div className="message-send-wrap">
+                    <button onClick={handleLeave} className="btn btn-danger btn-leave-chat">Leave</button>
+                    <div className="send-message-wrap">
+                        <input type="text" className="form-control send-message-input" placeholder="Say something nice!"
                                ref={inputChatRef}/>
-                        <button type="button" className="btn btn-outline-secondary"
-                                onClick={handleSendMessage}>Send
+                        <button type="button" className="btn btn-outline-secondary send-message-btn"
+                                onClick={handleSendMessage}>
+                            Send
                         </button>
-                    </>
-                }
-            </div>
+                    </div>
+                    <div>
 
+                    </div>
+                </div>
+                :
+                <div className="partner-left-wrapper">
+                    <button onClick={handleLeave} className="btn btn-danger btn-partner-left">Leave</button>
+                </div>
+            }
         </div>
     );
 }

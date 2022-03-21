@@ -2,10 +2,11 @@
     position: relative;
     height: 50%;
     width: 100%;
-    padding: 10px;
 
-    background-color: rgba(174, 216, 226, 0.42);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.41);
+    background-color: rgba(44, 187, 222, 0.13);
+
+    //border: 2px solid black;
     border-radius: 20px;
 
     grid-column-start: 2;
@@ -21,58 +22,98 @@
 /* Input */
 
 .message-send-wrap {
-    justify-content: center;
+    padding: 0 10px;
     position: absolute;
+    justify-content: space-between;
+    align-items: center;
     bottom: 0;
     display: flex;
     width: 100%;
+    //border: 1px solid blue;
 }
 
-.send-message {
-    width: 50%;
+.send-message-wrap {
+    .send-message-btn {
+
+    }
+
+    .send-message-input {
+        width: 70%;
+        display: inline;
+    }
 }
+
+
 
 .username {
-    position: absolute;
-    left: 10px;
-    font-size: 1.5em;
+    font-size: 1em;
     color: #8e44ad;
+}
+
+.btn-leave-chat {
+    padding: 5px 20px;
+}
+
+.partner-left-wrapper {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    .btn-partner-left {
+        width: 100%;
+        border-radius: 0 0 17px 17px !important;
+    }
 }
 
 
 /* Messages */
 
-.messages-wrap {
+.messages {
     height: 90%;
     overflow: auto;
     overflow-x: hidden;
     display: flex;
     flex-direction: column-reverse;
+
+    font-family: 'Lato',sans-serif;
+
+    padding: 0 5px;
 }
 
 .messages-wrap::-webkit-scrollbar {
     display: none;
 }
 
-.chat-message-wrap-other {
-    width: 98%;
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 255, 0.17);
-    border-radius: 10px;
-    padding: 0 10px;
-    margin: 10px;
-    text-align: left;
-    min-height: 60px;
+.message-wrap {
+    border: 1px solid black;
 }
 
-.chat-message-wrap-owner {
-    width: 98%;
-    box-shadow: 1px 1px 2px 1px rgba(0, 0, 255, 0.17);
-    border-radius: 10px;
-    padding: 0 10px;
-    margin: 10px;
-    text-align: right;
-    min-height: 60px;
+.chat-message-wrap {
+    min-width: 48px;
+    min-height: 35px;
+    border-radius: 16px;
 
+    box-sizing: border-box;
+    padding: 6px 16px 9px;
+    margin-bottom: 5px;
+
+    font-size: 17px;
+    line-height: 1.2;
+    word-break: break-word;
+
+    text-align: right;
+}
+
+.other {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: start;
+}
+
+.owner {
+    background-color: #26a1e0;
+    color: white;
+    align-self: end;
 }
 
 .message-username {
@@ -96,7 +137,3 @@
     color: grey;
 }
 
-.btn-leave-chat {
-    margin-bottom: 20px;
-    padding: 5px 20px;
-}

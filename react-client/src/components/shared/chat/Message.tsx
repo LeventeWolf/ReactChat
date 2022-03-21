@@ -17,22 +17,21 @@ const Message: React.FC<MessagePropTypes> = ({message, owner}) => {
     }
 
     return (
-        <div>
+        <>
             {owner ?
-                <div className="chat-message-wrap-owner">
-                    <span className="message-date">{message.content.date}</span>
-                    <span className="message-username">{message.content.username}</span>
+                <div className="chat-message-wrap owner">
+                    {/*<span className="message-date">{message.content.date}</span>*/}
+                    {/*<span className="message-username">{message.content.username}</span>*/}
                     <div>{message.content.messageValue}</div>
                 </div>
                 :
-                <div className="chat-message-wrap-other">
-                    <span className="message-username">{message.content.username}</span>
-                    <span className="message-date">{message.content.date}</span>
+                <div className="chat-message-wrap other">
+                    {/*<span className="message-username">{message.content.username}</span>*/}
+                    {/*<span className="message-date">{message.content.date}</span>*/}
                     <div>{message.content.messageValue}</div>
                 </div>
             }
-        </div>
-
+        </>
     );
 };
 
