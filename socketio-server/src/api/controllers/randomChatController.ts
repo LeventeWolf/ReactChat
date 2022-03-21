@@ -1,6 +1,6 @@
 import {ConnectedSocket, MessageBody, OnDisconnect, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import {Server, Socket} from "socket.io";
-import {log} from '../../lib/logger';
+import {log, logt} from '../../lib/logger';
 import chatData from '../services/chatDataHandler'
 import socketLogger from "../services/socketLoggerService";
 import socketData from "../services/socketLoggerService";
@@ -64,14 +64,6 @@ export class RandomChatController {
     }
 
 
-    @OnMessage('leave_random_chat')
-    public async emitPartnerLeft(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
-        const socketInfo = socketLogger.getSocket(socket.id);
-
-        if (socketInfo.data.inRoom) {
-
-        }
-    }
 
     /**
      * Handles the following cleanups when a socket had been disconnected
@@ -82,13 +74,30 @@ export class RandomChatController {
      * @param socket
      */
     @OnDisconnect()
-    @OnMessage("leave_random_chat")
-    public async handleLeave(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
+    @OnMessage('leave_random_chat')
+    public async emitPartnerLeft(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
         const socketInfo = socketLogger.getSocket(socket.id);
 
+        // Delete the room, because at this point both sockets are in there
         if (socketInfo.data.inRoom) {
-            log(`CleanUp: Socket left from room: ${socketInfo.data.inRoom}`)
+            log(`#CleanUp: Socket left from room: ${socketInfo.data.inRoom}`)
             io.to(socketInfo.data.inRoom).emit('partner_left', userLeftTheRoomMessage('partner'));
+
+            const randomChatRoom = io.sockets.adapter.rooms.get(socketInfo.data.inRoom);
+            logt(`+ Deleted RandomChat room : ${socketInfo.data.inRoom}`);
+            logt(`                     users: ` + Array.from(randomChatRoom))
+
+            // TODO socketService handleDelete
+            io.sockets.adapter.rooms.delete(socketInfo.data.inRoom);
+            Array.from(randomChatRoom).forEach(socketId => {
+                socketLogger.updateSocketInRoom(socketId, '');
+
+                // If socket's room has been removed, init a new room again for receiving any messages
+                if (!io.sockets.adapter.rooms.get(socketId)) {
+                    io.sockets.adapter.rooms.set(socketId, new Set([socketId]));
+                }
+            })
+
         }
     }
 }

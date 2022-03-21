@@ -56,6 +56,7 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
 
             SocketService.socket.emit('leave_random_chat');
             SocketService.socket.off('chat_message');
+            SocketService.socket.off('partner_left');
         }
     }, [])
 
