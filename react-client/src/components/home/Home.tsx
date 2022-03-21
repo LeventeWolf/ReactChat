@@ -36,10 +36,8 @@ export const Home: React.FC = () => {
     if (isInRoom) {
         return (
             <ChatContext.Provider value={chatContextValue}>
-                <Chat>
-                    {/* @ts-ignore */}
-                    <MessageBox username={SocketService.socket.id}/>
-                </Chat>
+                {/* @ts-ignore */}
+                <MessageBox username={SocketService.socket.id}/>
             </ChatContext.Provider>
         )
     }

@@ -22,12 +22,12 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
         if (!SocketService.socket) return;
 
         SocketService.socket.on('chat_message', (response) => {
-            all_messages.unshift(response.message);
+            all_messages.push(response.message);
             setMessages([...all_messages])
         });
 
         SocketService.socket.on('partner_left', (response) => {
-            all_messages.unshift(response.message);
+            all_messages.push(response.message);
             setMessages([...all_messages])
             setPartnerLeft(true);
 
@@ -83,8 +83,10 @@ export const MessageBox: React.FC<MessageBoxPropTypes> = ({username}) => {
     }
 
     return (
-        <div className="chat-box">
+        <div className="chat-container">
             <div className="messages">
+                <h2 className="welcome-chat-text">We connected to your partner!:)</h2>
+
                 {messages.map(messageData => {
                     return <Message key={v4()} owner={messageData.content.username === username} message={messageData}/>
                 })}

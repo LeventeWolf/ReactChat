@@ -1,29 +1,14 @@
-body {
-    overflow: hidden;
-}
-
-#main {
-    margin-top: 5vm;
+#chat-container {
     height: 100%;
     width: 100%;
+
+    //overflow: hidden;
 }
 
-#chat-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-column-gap: 25px;
-    padding: 0 20px;
-    height: 100%;
-}
-
-@media (max-width: 1000px) {
-    #chat-container {
-        display: flex;
-        width: 100%;
-    }
-}
-
-
-.center input {
-    width: 350px;
-}
+//#chat-container {
+//    display: grid;
+//    grid-template-columns: 1fr 2fr 1fr;
+//    grid-column-gap: 25px;
+//    padding: 0 20px;
+//    height: 100%;
+//}
