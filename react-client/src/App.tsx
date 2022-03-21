@@ -40,7 +40,7 @@ function App() {
     return (
         <GameContext.Provider value={gameContextValue}>
             <Router>
-                <Navbar/>
+                {/*<Navbar/>*/}
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>

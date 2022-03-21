@@ -20,12 +20,12 @@ const ChatFooter: React.FC<PropTypes> = ( {all_messages, setMessages} ) => {
         if (!SocketService.socket) return;
 
         SocketService.socket.on('chat_message', (response) => {
-            all_messages.push(response.message);
+            all_messages.unshift(response.message);
             setMessages([...all_messages])
         });
 
         SocketService.socket.on('partner_left', (response) => {
-            all_messages.push(response.message);
+            all_messages.unshift(response.message);
             setMessages([...all_messages])
             setPartnerLeft(true);
 

@@ -13,11 +13,10 @@ type MessageBoxPropTypes = {
 export const Messages: React.FC<MessageBoxPropTypes> = ({username, messages}) => {
     return (
         <div className="message-container">
-            <h2 className="welcome-chat-text">We connected to your partner!:)</h2>
-
             {messages.map(messageData => {
                 return <Message key={v4()} owner={messageData.content.username === username} message={messageData}/>
             })}
+            <h2 className="welcome-chat-text">We connected you to your partner!:)</h2>
         </div>
     );
 }

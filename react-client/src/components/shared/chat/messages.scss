@@ -5,7 +5,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     font-family: 'Lato',sans-serif;
 
     padding: 0 5px;
@@ -16,7 +16,15 @@
         color: grey;
         text-align: center;
         margin: 1rem 0;
+        font-size: 16pt;
     }
+
+    @media screen and (max-width: 500px) {
+        .welcome-chat-text {
+            font-size: 10pt;
+        }
+    }
+
 }
 
 .messages-wrap::-webkit-scrollbar {
@@ -30,7 +38,7 @@
     border-radius: 16px;
 
     padding: 6px 16px 9px;
-    margin-bottom: 10px;
+    margin-bottom: 0.3em;
 
     max-width: 70%;
     font-size: 12pt;
@@ -38,10 +46,9 @@
     word-break: break-word;
 }
 
-@media screen and (max-width: 1000px) {
+@media (max-width: 600px) {
     .chat-message-wrap {
         min-width: 10em;
-        font-size: 8pt;
     }
 }
 
