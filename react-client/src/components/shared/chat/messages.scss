@@ -8,7 +8,7 @@
     flex-direction: column-reverse;
 
     font-family: 'Lato',sans-serif;
-    padding: 0 5px;
+    padding: 5px;
     //border: 5px solid yellow;
 
     .welcome-chat-text {
@@ -26,21 +26,23 @@
 
 .chat-message-wrap {
     box-sizing: border-box;
-
     //min-width: 1em;
     border-radius: 16px;
 
     padding: 6px 16px 9px;
-    margin-bottom: 0.3em;
-
+    margin: 0.3vh 0.5vh;
     max-width: 70%;
-    font-size: 12pt;
-    line-height: 1.2;
     word-break: break-word;
+
+}
+
+.message-text {
+    font-size: 14pt;
+    line-height: 1.2;
 }
 
 @media (max-width: 600px) {
-    .chat-message-wrap {
+    .message-sent {
         word-break: break-word;
         width: auto;
         font-size: 12px;
@@ -48,6 +50,7 @@
         max-width: initial;
     }
 }
+
 
 .other {
     background-color: #e5e5ea;

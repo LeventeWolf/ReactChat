@@ -16,7 +16,9 @@ export const Messages: React.FC<MessageBoxPropTypes> = ({username, messages}) =>
             {messages.map(messageData => {
                 return <Message key={v4()} owner={messageData.content.username === username} message={messageData}/>
             })}
-            <h2 className="welcome-chat-text">We connected you to your partner!:)</h2>
+
+
+            {messages.length === 0 ? <h2 className="welcome-chat-text">You can start chatting!</h2> : <></>}
         </div>
     );
 }

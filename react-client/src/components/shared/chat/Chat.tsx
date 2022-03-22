@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import SocketService from "../../../services/socketService";
 
 import './chat.scss';
+import './../../../style/animations.scss';
 import Messages from "./Messages";
 import ChatFooter from "./ChatFooter";
 

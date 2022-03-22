@@ -66,12 +66,12 @@ export class RoomController {
         const socketInfo = socketLogger.getSocket(socket.id);
 
         // Emit message '<username> left the room'!
-        const emitLeftTheRoomMessage = async () => {
-            if (socketInfo.data.inRoom) {
-                logt(`CleanUp: Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
-                await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, userLeftTheRoomMessage(socketInfo.data.username))
-            }
-        };
+        // const emitLeftTheRoomMessage = async () => {
+        //     if (socketInfo.data.inRoom) {
+        //         logt(`CleanUp: Emit 'user left' message to room: '${socketInfo.data.inRoom}'`)
+        //         await ioEmitChatMessageToRoom(io, socketInfo.data.inRoom, userLeftTheRoomMessage(socketInfo.data.username))
+        //     }
+        // };
 
         // TODO Extract to searchController
         // if he was searching, remove him from searching pool
@@ -83,7 +83,7 @@ export class RoomController {
         }
 
         // Cleanup
-        await emitLeftTheRoomMessage();
+        // await emitLeftTheRoomMessage();
         await deleteFromSearchingPool();
         socketData.removeSocket(socket.id);
         console.log()
