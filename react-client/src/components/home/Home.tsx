@@ -1,22 +1,16 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {JoinRoom} from "./joinRoom";
-import './home.scss';
-import Chat from "../shared/chat/Chat";
-import ChatContext, {ChatContextProps} from "./chatContext";
+import React, {useEffect} from 'react';
+
 import SocketService from "../../services/socketService";
-import Messages from "../shared/chat/Messages";
+import './home.scss';
+
+import { JoinRoom } from "./joinRoom";
+import { Navigate } from "react-router-dom";
+import { useContext } from 'react';
+import ChatContext from "../shared/chat/chatContext";
+import Navbar from "../shared/navbar/Navbar";
 
 export const Home: React.FC = () => {
-    const [isInRoom, setInRoom] = useState<boolean>(false);
-    const [isJoining, setIsJoining] = useState<boolean>(false);
-    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
-
-    const chatContextValue: ChatContextProps = {
-        isInRoom, setInRoom,
-        isJoining, setIsJoining,
-        // partnerLeft, setPartnerLeft,
-    };
-
+    const {isInRoom, setInRoom, isJoining, setIsJoining} = useContext(ChatContext);
 
     useEffect(() => {
         if (!SocketService.socket) return;
@@ -35,21 +29,19 @@ export const Home: React.FC = () => {
 
     if (isInRoom) {
         return (
-            <ChatContext.Provider value={chatContextValue}>
-                <Chat />
-            </ChatContext.Provider>
+            <Navigate to="random-chat" />
         )
     }
 
     return (
-        <ChatContext.Provider value={chatContextValue}>
-            <div className="app-container">
-                <h1 className="welcome-text">Welcome to Chat.io</h1>
-                <div className="main-container">
-                    <JoinRoom/>
-                </div>
+        <div className="app-container">
+            <Navbar/>
+
+            <h1 className="welcome-text">Welcome to Chat.io</h1>
+            <div className="main-container">
+                <JoinRoom/>
             </div>
-        </ChatContext.Provider>
+        </div>
     );
 }
 

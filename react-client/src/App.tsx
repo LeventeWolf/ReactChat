@@ -1,13 +1,14 @@
 import React, {useLayoutEffect, useState} from "react";
 
 import socketService from "./services/socketService";
-import GameContext, {IGameContextProps} from "./gameContext";
 
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
 import AllChat from "./components/allChat/AllChat";
+import RandomChat from "./components/randomChat/RandomChat";
+import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
 
 
 export const connectSocket = async () => {
@@ -19,17 +20,14 @@ export const connectSocket = async () => {
 
 
 function App() {
-    const [isInRoom, setInRoom] = useState(false);
-    const [playerSymbol, setPlayerSymbol] = useState<"x" | "o">("x");
-    const [isPlayerTurn, setPlayerTurn] = useState(false);
-    const [isGameStarted, setGameStarted] = useState(false);
+    const [isInRoom, setInRoom] = useState<boolean>(false);
+    const [isJoining, setIsJoining] = useState<boolean>(false);
 
-    const gameContextValue: IGameContextProps = {
+    const chatContextValue: ChatContextProps = {
         isInRoom, setInRoom,
-        playerSymbol, setPlayerSymbol,
-        isPlayerTurn, setPlayerTurn,
-        isGameStarted, setGameStarted,
+        isJoining, setIsJoining,
     };
+
 
     useLayoutEffect(() => {
         if (!socketService.socket) {
@@ -38,16 +36,16 @@ function App() {
     }, [])
 
     return (
-        <GameContext.Provider value={gameContextValue}>
+        <ChatContext.Provider value={chatContextValue}>
             <Router>
-                {/*<Navbar/>*/}
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>
                     <Route path="/chat" element={<AllChat/>}/>
+                    <Route path="/random-chat" element={<RandomChat/>}/>
                 </Routes>
             </Router>
-        </GameContext.Provider>
+        </ChatContext.Provider>
     );
 }
 

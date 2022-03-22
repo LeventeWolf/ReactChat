@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import styled from "styled-components";
 import socketService from "../../services/socketService";
-import chatContext from "./chatContext";
+import chatContext from "../shared/chat/chatContext";
 
 const JoinRoomContainer = styled.div`
   margin: 5rem auto;

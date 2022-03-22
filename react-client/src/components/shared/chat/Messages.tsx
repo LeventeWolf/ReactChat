@@ -6,7 +6,7 @@ import {v4} from "uuid";
 
 
 type MessageBoxPropTypes = {
-    username: string,
+    username: string | undefined,
     messages: MessageType[];
 }
 
