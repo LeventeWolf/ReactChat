@@ -31,8 +31,7 @@ export async function ioEmitAvailableUsers(io: Server, roomId: string) {
         const sockets = Array.from(io.sockets.adapter.rooms.get(roomId).values());
         const users = sockets.map(socketId => socketLogger.getUsername(socketId));
         io.to(roomId).emit('update_users', {users});
-        logt(` + Room updated: '${roomId}'`)
-        logt(` + Room users  : [${users}]`)
+        log(`[AvailableUsers] Emitting: update_users`)
     } catch (e) {
         logt(e)
         await ioEmitRoomError(io, e);

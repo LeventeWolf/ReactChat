@@ -1,4 +1,5 @@
 import {MessageType} from "../controllers/chatController";
+import {log, logt} from "../../lib/logger";
 
 type RoomInfo = {
     sockets: string[],
@@ -51,6 +52,12 @@ class RoomsService {
         this.joiningAdapterRooms = rooms;
     }
 
+    leaveRoom(socketId: string, roomId: string) {
+        if (!roomId) throw Error;
+
+        this.rooms[roomId].sockets = this.rooms[roomId].sockets.filter(socketId => socketId !== socketId);
+        log(`[RoomService] Removed socket from room: ${roomId} | ${socketId}`)
+    }
 }
 
 

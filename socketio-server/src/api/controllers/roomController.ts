@@ -4,7 +4,6 @@ import {log, logt} from '../../lib/logger';
 import roomService from '../services/roomService'
 import socketLogger from "../services/socketLoggerService";
 import {ioEmitChatMessageToRoom} from "./chatController";
-import socketData from "../services/socketLoggerService";
 import {userJoinedTheRoomMessage, userLeftTheRoomMessage} from "../constants/chatMessageConstants";
 import {ioEmitAvailableUsers} from "./availableUsersController";
 
@@ -25,8 +24,6 @@ export class RoomController {
     @OnMessage("join_room")
     public async joinRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
         console.log();
-        log(`Socket joined to room: '${message.roomId}' | ${socket.id}`)
-
         try {
             // Socket join to specified room
             this.joinToRoom(io, socket, message.roomId, message);
@@ -45,6 +42,7 @@ export class RoomController {
     private joinToRoom(io: Server, socket: Socket, roomId: string, message: any) {
         // Join to io.sockets.adapter.rooms
         socket.join(roomId);
+        log(`Socket joined to room: '${message.roomId}' | ${socket.id}`)
 
         // Update RoomService Info
         roomService.joinRoom(roomId, socket.id)
@@ -53,6 +51,9 @@ export class RoomController {
         socketLogger.updateSocketInRoom(socket.id, message.roomId);
         socketLogger.updateRooms(io.sockets.adapter.rooms);
         socketLogger.updateUsername(socket.id, message.username);
+
+        // Update rooms
+        this.ioEmitUpdateRooms(io);
     }
 
     @OnMessage("new_room")
@@ -60,7 +61,7 @@ export class RoomController {
         try {
             log(`#Creating new room: id=${message.roomId}`)
             roomService.createNewRoom(message.roomId)
-            await this.ioEmitRoomNames(io);
+            await this.ioEmitUpdateRooms(io);
         } catch (e) {
             await ioEmitRoomError(io, e);
             log('#Joining new room err.: ' + e.message)
@@ -68,8 +69,8 @@ export class RoomController {
     }
 
     @OnMessage("update_rooms")
-    public async ioEmitRoomNames(@SocketIO() io: Server) {
-        log('#Updating room names!')
+    public async ioEmitUpdateRooms(@SocketIO() io: Server) {
+        log(`[RoomController] Emitting: 'update_rooms'`)
         Object.entries(roomService.rooms).forEach(entry => {
             logt(`${entry[0]} - ${JSON.stringify(entry[1])}`);
         })
@@ -109,7 +110,14 @@ export class RoomController {
         // Cleanup
         // await emitLeftTheRoomMessage();
         await deleteFromSearchingPool();
-        socketData.removeSocket(socket.id);
+
+        // Update RoomsService Info
+        roomService.leaveRoom(socketInfo.id, socketInfo.data.inRoom)
+        await this.ioEmitUpdateRooms(io);
+
+        // Update SocketLogger
+        socketLogger.removeSocket(socket.id);
+
         console.log()
     }
 }
