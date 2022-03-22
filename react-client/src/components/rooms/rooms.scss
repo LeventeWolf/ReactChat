@@ -1,5 +1,5 @@
 #rooms-main {
-  width: 35%;
+  width: 40%;
   margin: 2vh auto;
 
   .table-wrap {
@@ -28,6 +28,12 @@
     td:last-child {
       padding-right: 22px;
     }
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  #rooms-main {
+    width: 100%;
   }
 }
 
