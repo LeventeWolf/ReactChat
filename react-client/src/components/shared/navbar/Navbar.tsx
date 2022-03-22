@@ -21,11 +21,11 @@ function Navbar() {
                             Rooms
                         </NavLink>
                     </li>
-                    <li className="nav-item mx-0 mx-lg-1">
-                        <NavLink className="nav-link" to="/chat">
-                            Chat
-                        </NavLink>
-                    </li>
+                    {/*<li className="nav-item mx-0 mx-lg-1">*/}
+                    {/*    <NavLink className="nav-link" to="/chat">*/}
+                    {/*        Chat*/}
+                    {/*    </NavLink>*/}
+                    {/*</li>*/}
                 </ul>
             </div>
         </nav>

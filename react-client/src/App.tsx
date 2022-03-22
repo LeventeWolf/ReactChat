@@ -7,7 +7,7 @@ import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
 import AllChat from "./components/allChat/AllChat";
-import RandomChat from "./components/randomChat/RandomChat";
+import ChatRoom from "./components/chat/ChatRoom";
 import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
 
 
@@ -41,8 +41,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>
-                    <Route path="/chat" element={<AllChat/>}/>
-                    <Route path="/random-chat" element={<RandomChat/>}/>
+                    <Route path="/chat" element={<ChatRoom/>}/>
+                    {/*<Route path="/chat" element={<AllChat/>}/>*/}
                 </Routes>
             </Router>
         </ChatContext.Provider>

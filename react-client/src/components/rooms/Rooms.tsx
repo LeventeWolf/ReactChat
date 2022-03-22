@@ -1,10 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import socketService from "../../services/socketService";
 
 import CreateRoom from "./CreateRoom";
 import './rooms.scss';
 import {Room} from "./Room";
+import Navbar from "../shared/navbar/Navbar";
+import {Navigate} from "react-router-dom";
+import ChatContext from "../shared/chat/chatContext";
 
 export interface RoomType {
     roomId: string,
@@ -25,6 +28,7 @@ export type User = {
 function Rooms() {
     const [roomsList, setRoomsList] = useState<RoomType[]>([]);
     const [isJoined, setIsJoined] = useState(false);
+    const {isInRoom} = useContext(ChatContext);
 
     useEffect(() => {
         if (socketService.socket) {
@@ -64,20 +68,27 @@ function Rooms() {
         // TODO
     }
 
+    if (isInRoom) {
+        return (
+            <Navigate to="/chat" />
+        )
+    }
+
     return (
-        <div id="rooms-main">
-            <h1>Rooms</h1>
-            <CreateRoom handleFilter={handleFilter}/>
+        <div id="main-container">
+            <Navbar />
+            <div id="rooms-main">
+                <h1>Rooms</h1>
+                <CreateRoom handleFilter={handleFilter}/>
 
-            {isJoined ?
-                <div> in room </div>
+                {isJoined ?
+                    <div> in room </div>
                     :
-                <></>
-            }
+                    <></>
+                }
+                <ListOfRooms roomTypes={roomsList}/>
 
-
-            <ListOfRooms roomTypes={roomsList}/>
-
+            </div>
         </div>
     );
 }

@@ -1,10 +1,10 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import { Navigate } from 'react-router-dom';
 import Chat from "../shared/chat/Chat";
 import ChatContext from "../shared/chat/chatContext";
 
 
-const RandomChat: React.FC = () => {
+const ChatRoom: React.FC = () => {
     const {isInRoom} = useContext(ChatContext);
 
 
@@ -18,4 +18,4 @@ const RandomChat: React.FC = () => {
 };
 
 
-export default RandomChat;
+export default ChatRoom;

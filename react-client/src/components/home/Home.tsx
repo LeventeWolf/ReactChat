@@ -29,7 +29,7 @@ export const Home: React.FC = () => {
 
     if (isInRoom) {
         return (
-            <Navigate to="random-chat" />
+            <Navigate to="chat" />
         )
     }
 
