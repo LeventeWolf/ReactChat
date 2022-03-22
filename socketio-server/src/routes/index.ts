@@ -1,8 +1,7 @@
 import * as express from "express";
-import chatData from "../api/services/chatDataHandler";
-import {log} from "../lib/logger";
-import socketService from "../api/services/socketLoggerService";
+import chatData from "../api/services/roomService";
 import socketLogger from "../api/services/socketLoggerService";
+import roomService from "../api/services/roomService";
 
 const router = express.Router();
 
@@ -13,7 +12,15 @@ router.get("/", function (req, res, next) {
 
 router.get("/api/rooms", function (req, res, next) {
     try {
-        const result = Array.from(socketLogger.rooms).map((dict, index) => {
+        return res.send({'rooms': roomService.rooms}).end();
+    } catch (e) {
+        console.log(e)
+    }
+});
+
+router.get("/api/adapter-rooms", function (req, res, next) {
+    try {
+        const result = Array.from(socketLogger.adapterRooms).map((dict, index) => {
             return {
                 id: dict[0],
                 sockets: Array.from(dict[1])
@@ -37,7 +44,7 @@ router.get("/api/joining-pool", function (req, res, next) {
 
 router.get("/api/sockets", function (req, res, next) {
     try {
-        const result = Array.from(socketService.socketsData);
+        const result = Array.from(socketLogger.socketsData);
         return res.send({'connectedSockets': result}).end();
     } catch (e) {
         console.log(e)

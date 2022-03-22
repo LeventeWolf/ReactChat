@@ -1,6 +1,6 @@
 import {ConnectedSocket, MessageBody, OnDisconnect, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import { Server, Socket } from "socket.io";
-import chatData from '../services/chatDataHandler'
+import chatData from '../services/roomService'
 import {log} from "../../lib/logger";
 
 export interface MessageType {

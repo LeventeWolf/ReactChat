@@ -2,6 +2,7 @@ import {ConnectedSocket, OnConnect, OnDisconnect, SocketController, SocketIO,} f
 import {log} from "../../lib/logger";
 import {Socket, Server} from "socket.io";
 import socketData from "../services/socketLoggerService";
+import socketLogger from "../services/socketLoggerService";
 
 @SocketController()
 export class MainController {
@@ -9,6 +10,7 @@ export class MainController {
     public onConnection(@ConnectedSocket() socket: Socket, @SocketIO() io: Server) {
         log(`New Socket connected: ${socket.id}`);
         socketData.log_storeSocket(socket.id);
+        socketLogger.updateRooms(io.sockets.adapter.rooms);
     }
 
     @OnDisconnect()

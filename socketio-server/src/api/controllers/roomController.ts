@@ -1,7 +1,7 @@
 import {ConnectedSocket, MessageBody, OnMessage, SocketController, SocketIO} from "socket-controllers";
 import {Server, Socket} from "socket.io";
 import {log, logt} from '../../lib/logger';
-import chatData from '../services/chatDataHandler'
+import roomService from '../services/roomService'
 import socketLogger from "../services/socketLoggerService";
 import {ioEmitChatMessageToRoom} from "./chatController";
 import socketData from "../services/socketLoggerService";
@@ -46,10 +46,34 @@ export class RoomController {
         // Join to io.sockets.adapter.rooms
         socket.join(roomId);
 
-        // Update logger
+        // Update RoomService Info
+        roomService.joinRoom(roomId, socket.id)
+
+        // Update SocketLogger Info
         socketLogger.updateSocketInRoom(socket.id, message.roomId);
         socketLogger.updateRooms(io.sockets.adapter.rooms);
         socketLogger.updateUsername(socket.id, message.username);
+    }
+
+    @OnMessage("new_room")
+    public async createNewRoom(@SocketIO() io: Server, @ConnectedSocket() socket: Socket, @MessageBody() message: any) {
+        try {
+            log(`#Creating new room: id=${message.roomId}`)
+            roomService.createNewRoom(message.roomId)
+            await this.ioEmitRoomNames(io);
+        } catch (e) {
+            await ioEmitRoomError(io, e);
+            log('#Joining new room err.: ' + e.message)
+        }
+    }
+
+    @OnMessage("update_rooms")
+    public async ioEmitRoomNames(@SocketIO() io: Server) {
+        log('#Updating room names!')
+        Object.entries(roomService.rooms).forEach(entry => {
+            logt(`${entry[0]} - ${JSON.stringify(entry[1])}`);
+        })
+        io.emit('update_rooms', {rooms: roomService.rooms})
     }
 
     /**
@@ -76,9 +100,9 @@ export class RoomController {
         // TODO Extract to searchController
         // if he was searching, remove him from searching pool
         const deleteFromSearchingPool = async () => {
-            if (chatData.joiningPool.has(socket.id)) {
+            if (roomService.joiningPool.has(socket.id)) {
                 logt(`CleanUp: Remove from searching users: ${socket.id}`)
-                chatData.joiningPool.delete(socket.id);
+                roomService.joiningPool.delete(socket.id);
             }
         }
 

@@ -1,15 +1,20 @@
 import {MessageType} from "../controllers/chatController";
-import {Socket} from "socket.io";
 
+type RoomInfo = {
+    sockets: string[],
+    messages: string[],
+    capacity: number,
+    visibility: "public" | "private"
+}
 
-class ChatData {
+class RoomsService {
+    public rooms: { [id: string]: RoomInfo } = {}
     public messages: MessageType[] = [];
     public users = [{id: 'socket_id_12345', username: 'Big Brother 👀', isInRoom: true}];
-    public rooms = {}
     public joiningAdapterRooms = new Map();
     public joiningPool = new Set();
 
-    createNewRoom(roomId: string, capacity=1000, visibility='public') {
+    createNewRoom(roomId: string, capacity=1000, visibility: ("public" | "private") = "public") {
         if (this.rooms[roomId]) {
             throw {
                 name: 'room_exists_error',
@@ -49,4 +54,4 @@ class ChatData {
 }
 
 
-export default new ChatData();
+export default new RoomsService();

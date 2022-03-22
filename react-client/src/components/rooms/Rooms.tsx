@@ -31,21 +31,21 @@ function Rooms() {
     const {isInRoom} = useContext(ChatContext);
 
     useEffect(() => {
-        if (socketService.socket) {
-            socketService.socket.emit('update_rooms');
-            socketService.socket.on('update_rooms', (message) => {
-                updateRooms(message.rooms);
-            });
-            socketService.socket.on('room_error', (message) => {
-                console.log(`[${message.error.type}] ${message.error.message}`)
-            })
-            socketService.socket.on('update_joined', (message) => {
-                if (message.status === 200) {
-                    console.log('joined to room')
-                    setIsJoined(true);
-                }
-            })
-        }
+        if (!socketService.socket) return
+
+        socketService.socket.emit('update_rooms');
+        socketService.socket.on('update_rooms', (message) => {
+            updateRooms(message.rooms);
+        });
+        socketService.socket.on('update_joined', (message) => {
+            if (message.status === 200) {
+                console.log('joined to room')
+                setIsJoined(true);
+            }
+        })
+        socketService.socket.on('room_error', (message) => {
+            console.log(`[${message.error.type}] ${message.error.message}`)
+        })
 
         return (() => {
             if (socketService.socket) {
@@ -56,6 +56,10 @@ function Rooms() {
         })
     }, []);
 
+    /**
+     * On socket message 'update_rooms'
+     * @param rooms
+     */
     function updateRooms(rooms: any) {
         const roomList: RoomType[] = [];
         for (const [key, value] of Object.entries(rooms)) {
@@ -70,13 +74,13 @@ function Rooms() {
 
     if (isInRoom) {
         return (
-            <Navigate to="/chat" />
+            <Navigate to="/chat"/>
         )
     }
 
     return (
         <div id="main-container">
-            <Navbar />
+            <Navbar/>
             <div id="rooms-main">
                 <h1>Rooms</h1>
                 <CreateRoom handleFilter={handleFilter}/>
@@ -94,7 +98,7 @@ function Rooms() {
 }
 
 
-function ListOfRooms(props: { roomTypes: RoomType[] } ) {
+function ListOfRooms(props: { roomTypes: RoomType[] }) {
     if (!props.roomTypes || props.roomTypes.length == 0) {
         return <div className="no-rooms">No rooms created!</div>
     }
@@ -110,9 +114,9 @@ function ListOfRooms(props: { roomTypes: RoomType[] } ) {
                 </tr>
                 </thead>
                 <tbody>
-                    {props.roomTypes.map((room) => {
-                        return <Room key={room.roomId} room={room}/>
-                    })}
+                {props.roomTypes.map((room) => {
+                    return <Room key={room.roomId} room={room}/>
+                })}
                 </tbody>
             </table>
         </div>

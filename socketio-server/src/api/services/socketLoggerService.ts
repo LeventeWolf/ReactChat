@@ -12,7 +12,7 @@ interface SocketInfo {
 
 class SocketLogger {
     public socketsData = new Map<string, SocketInfo>();
-    public rooms = new Map<string, Set<string>>();
+    public adapterRooms = new Map<string, Set<string>>();
 
     log_storeSocket(socketId: string) {
         this.socketsData.set(socketId, {
@@ -63,7 +63,7 @@ class SocketLogger {
     }
 
     updateRooms(rooms: Map<string, Set<string>>) {
-        this.rooms = rooms;
+        this.adapterRooms = rooms;
     }
 
     getUsername(socketId) {
