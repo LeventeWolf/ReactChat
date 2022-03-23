@@ -1,14 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
 
 import socketService from "../../services/socketService";
+import ChatContext from "../shared/chat/chatContext";
 
 import CreateRoom from "./CreateRoom";
-import './rooms.scss';
 import {Room} from "./Room";
 import Navbar from "../shared/navbar/Navbar";
 import {Navigate} from "react-router-dom";
-import ChatContext from "../shared/chat/chatContext";
 import {useAlert} from "react-alert";
+import './rooms.scss';
 
 export interface RoomType {
     roomId: string,
@@ -18,11 +18,6 @@ export interface RoomType {
         capacity: number,
         visibility: 'public' | 'private'
     }
-}
-
-export type User = {
-    id: string,
-    username: string,
 }
 
 
@@ -79,26 +74,19 @@ function Rooms() {
     }
 
 
-    if (isInRoom) {
-        return (
-            <Navigate to="/chat"/>
-        )
+    if (isInRoom){
+        return <Navigate to="/chat/rooms/"/>
     }
+
 
     return (
         <div id="main-container">
             <Navbar/>
-            <div id="rooms-main">
+
+            <div id="rooms-container">
                 <h1>Rooms</h1>
                 <CreateRoom handleFilter={handleFilter}/>
-
-                {isJoined ?
-                    <div> in room </div>
-                    :
-                    <></>
-                }
                 <ListOfRooms roomTypes={roomsList}/>
-
             </div>
         </div>
     );

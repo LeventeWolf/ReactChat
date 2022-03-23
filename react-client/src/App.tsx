@@ -3,11 +3,9 @@ import React, {useLayoutEffect, useState} from "react";
 import socketService from "./services/socketService";
 
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import Navbar from "./components/shared/navbar/Navbar";
 import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
-import AllChat from "./components/allChat/AllChat";
-import ChatRoom from "./components/chat/ChatRoom";
+import RandomRoom from "./components/chat/RandomRoom";
 import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
 
 
@@ -41,7 +39,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>
-                    <Route path="/chat" element={<ChatRoom/>}/>
+                    <Route path="/chat/random" element={<RandomRoom/>}/>
+                    <Route path="/chat/rooms" element={<RandomRoom/>}/>
                     {/*<Route path="/chat" element={<AllChat/>}/>*/}
                 </Routes>
             </Router>

@@ -25,7 +25,7 @@ export const CreateRoom: React.FC<Props> = ( {handleFilter}) => {
             socketService.socket.emit('new_room', {roomId: roomName})
         }
 
-        // setRoomName('');
+        setRoomName('');
     }
 
     function handleJoinRoom() {

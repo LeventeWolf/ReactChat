@@ -15,11 +15,7 @@ export const Home: React.FC = () => {
     useEffect(() => {
         if (!SocketService.socket) return;
 
-        SocketService.socket.on('partner_found', (message) => {
-            setIsJoining(false);
-            setInRoom(true);
-        });
-
+        SocketService.socket.on('partner_found', () => handlePartnerFound());
 
         return (() => {
             if (!SocketService.socket) return;
@@ -27,9 +23,15 @@ export const Home: React.FC = () => {
         })
     }, [])
 
+    function handlePartnerFound() {
+        console.log('partner_found!')
+        setIsJoining(false);
+        setInRoom(true);
+    }
+
     if (isInRoom) {
         return (
-            <Navigate to="chat" />
+            <Navigate to="/chat/random/" />
         )
     }
 

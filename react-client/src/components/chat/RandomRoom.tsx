@@ -4,7 +4,7 @@ import Chat from "../shared/chat/Chat";
 import ChatContext from "../shared/chat/chatContext";
 
 
-const ChatRoom: React.FC = () => {
+const RandomRoom: React.FC = () => {
     const {isInRoom} = useContext(ChatContext);
 
 
@@ -13,9 +13,9 @@ const ChatRoom: React.FC = () => {
     }
 
     return (
-        <Chat />
+        <Chat/>
     );
 };
 
 
-export default ChatRoom;
+export default RandomRoom;
