@@ -8,6 +8,7 @@ import {Room} from "./Room";
 import Navbar from "../shared/navbar/Navbar";
 import {Navigate} from "react-router-dom";
 import ChatContext from "../shared/chat/chatContext";
+import {useAlert} from "react-alert";
 
 export interface RoomType {
     roomId: string,
@@ -29,23 +30,16 @@ function Rooms() {
     const [roomsList, setRoomsList] = useState<RoomType[]>([]);
     const [isJoined, setIsJoined] = useState(false);
     const {isInRoom} = useContext(ChatContext);
+    const alert = useAlert();
+
 
     useEffect(() => {
-        if (!socketService.socket) return
+        if (!socketService.socket) return;
 
         socketService.socket.emit('update_rooms');
-        socketService.socket.on('update_rooms', (message) => {
-            updateRooms(message.rooms);
-        });
-        socketService.socket.on('update_joined', (message) => {
-            if (message.status === 200) {
-                console.log('joined to room')
-                setIsJoined(true);
-            }
-        })
-        socketService.socket.on('room_error', (message) => {
-            console.log(`[${message.error.type}] ${message.error.message}`)
-        })
+        socketService.socket.on('update_rooms', message => updateRooms(message.rooms));
+        socketService.socket.on('update_joined', message => updateJoined(message));
+        socketService.socket.on('room_error', message => handleErrors(message));
 
         return (() => {
             if (socketService.socket) {
@@ -68,9 +62,22 @@ function Rooms() {
         setRoomsList(roomList);
     }
 
+    function updateJoined(message: any) {
+        if (message.status === 200) {
+            console.log('joined to room')
+            setIsJoined(true);
+        }
+    }
+
     function handleFilter(value: string) {
         // TODO
     }
+
+    function handleErrors(message: any) {
+        console.log(`[${message.error.type}] ${message.error.message}`)
+        alert.error(message.error.message);
+    }
+
 
     if (isInRoom) {
         return (
