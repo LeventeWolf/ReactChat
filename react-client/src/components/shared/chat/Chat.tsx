@@ -1,13 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
-
-import SocketService from "../../../services/socketService";
+import React from 'react';
 
 import './chat.scss';
 import './../../../style/animations.scss';
 import Messages from "./Messages";
 import ChatFooter from "./ChatFooter";
-import { Navigate } from 'react-router-dom';
-import ChatContext from "./chatContext";
 
 
 export interface MessageType {
@@ -19,19 +15,15 @@ export interface MessageType {
     }
 }
 
-const all_messages: any = [];
 
-const Chat: React.FC = ( ) => {
-    const [messages, setMessages] = useState<MessageType[]>([]);
-    const username = SocketService.socket ? SocketService.socket.id : undefined;
+type PropTypes = {
+    all_messages: any,
+    messages: any,
+    setMessages: any,
+    username: string | undefined,
+}
 
-    useEffect(() => {
-        // TODO: Alert user that reload will leave chat!
-        // window.onbeforeunload = function(event) {
-        //     return false;
-        // };
-    }, [])
-
+const Chat: React.FC<PropTypes> = ( {all_messages, username, messages, setMessages} ) => {
 
     return (
         <div id="chat-container">
