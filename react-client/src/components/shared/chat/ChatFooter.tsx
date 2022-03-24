@@ -1,10 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import SocketService from "../../../services/socketService";
 import SendIcon from '@mui/icons-material/Send';
 import MenuIcon from '@mui/icons-material/Menu';
 import ReturnIcon from '@mui/icons-material/KeyboardReturn';
 import './chatFooter.scss';
 import './../../../style/animations.scss';
+import chatContext from "./chatContext";
 
 type PropTypes = {
     all_messages: any;
@@ -12,9 +13,10 @@ type PropTypes = {
 }
 
 const ChatFooter: React.FC<PropTypes> = ( {all_messages, setMessages} ) => {
-    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
     const [isNavToggled, setNavToggled] = useState<boolean>(false);
     const inputChatRef = useRef<HTMLInputElement>(document.createElement("input"));
+    const {partnerLeft} = useContext(chatContext);
+
 
     useEffect(() => {
         if (!SocketService.socket) return;
@@ -24,26 +26,11 @@ const ChatFooter: React.FC<PropTypes> = ( {all_messages, setMessages} ) => {
             setMessages([...all_messages])
         });
 
-        SocketService.socket.on('partner_left', (response) => {
-            all_messages.unshift(response.message);
-            setMessages([...all_messages])
-            setPartnerLeft(true);
-
-            if (inputChatRef.current) {
-                inputChatRef.current.removeEventListener('keypress', sendMessageOnEnter);
-            }
-
-            if (!SocketService.socket) return;
-            SocketService.socket.off('partner_left');
-            SocketService.socket.off('chat_message');
-        });
-
         return () => {
             if (!SocketService.socket) return
 
             SocketService.socket.emit('leave_random_chat');
             SocketService.socket.off('chat_message');
-            SocketService.socket.off('partner_left');
         }
     }, [])
 

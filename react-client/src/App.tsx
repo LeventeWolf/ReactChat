@@ -7,6 +7,7 @@ import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
 import RandomRoom from "./components/chat/RandomRoom";
 import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
+import ChatRoom from "./components/chat/ChatRoom";
 
 
 export const connectSocket = async () => {
@@ -20,10 +21,12 @@ export const connectSocket = async () => {
 function App() {
     const [isInRoom, setInRoom] = useState<boolean>(false);
     const [isJoining, setIsJoining] = useState<boolean>(false);
+    const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
 
     const chatContextValue: ChatContextProps = {
         isInRoom, setInRoom,
         isJoining, setIsJoining,
+        partnerLeft, setPartnerLeft
     };
 
 
@@ -40,8 +43,7 @@ function App() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/rooms" element={<Rooms/>}/>
                     <Route path="/chat/random" element={<RandomRoom/>}/>
-                    <Route path="/chat/rooms" element={<RandomRoom/>}/>
-                    {/*<Route path="/chat" element={<AllChat/>}/>*/}
+                    <Route path="/chat/rooms" element={<ChatRoom/>}/>
                 </Routes>
             </Router>
         </ChatContext.Provider>
