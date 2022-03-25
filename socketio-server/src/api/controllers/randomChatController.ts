@@ -3,9 +3,8 @@ import {Server, Socket} from "socket.io";
 import {log, logt} from '../../lib/logger';
 import chatData from '../services/roomService'
 import socketLogger from "../services/socketLoggerService";
-import socketData from "../services/socketLoggerService";
-import {MessageType} from "./chatController";
 import {userLeftTheRoomMessage} from "../constants/chatMessageConstants";
+import roomService from "../services/roomService";
 
 type User = {
     id: string,
@@ -78,16 +77,20 @@ export class RandomChatController {
     public async emitPartnerLeft(@SocketIO() io: Server, @ConnectedSocket() socket: Socket) {
         const socketInfo = socketLogger.getSocket(socket.id);
 
+        // Check if user was in a random room
+        if (roomService.rooms[socketInfo.data.inRoom]) return;
+
+        log(`[RandomChatController] on: #leave_random_chat`)
+
         // Delete the room, because at this point both sockets are in there
         if (socketInfo.data.inRoom) {
-            log(`#CleanUp: Socket left from room: ${socketInfo.data.inRoom}`)
+            log(`#CleanUp: Socket left from room: ${socketInfo.data.inRoom}`);
             io.to(socketInfo.data.inRoom).emit('partner_left', userLeftTheRoomMessage('partner'));
 
             const randomChatRoom = io.sockets.adapter.rooms.get(socketInfo.data.inRoom);
             logt(`+ Deleted RandomChat room : ${socketInfo.data.inRoom}`);
-            logt(`                     users: ` + Array.from(randomChatRoom))
+            logt(`                     users: ` + Array.from(randomChatRoom));
 
-            // TODO socketService handleDelete
             io.sockets.adapter.rooms.delete(socketInfo.data.inRoom);
             Array.from(randomChatRoom).forEach(socketId => {
                 socketLogger.updateSocketInRoom(socketId, '');
@@ -96,8 +99,9 @@ export class RandomChatController {
                 if (!io.sockets.adapter.rooms.get(socketId)) {
                     io.sockets.adapter.rooms.set(socketId, new Set([socketId]));
                 }
-            })
-
+            });
         }
+
+        socketLogger.removeSocket(socket.id);
     }
 }

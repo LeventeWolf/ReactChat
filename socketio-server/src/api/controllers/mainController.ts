@@ -15,6 +15,5 @@ export class MainController {
     @OnDisconnect()
     public async disconnect(@SocketIO() io: Server, @ConnectedSocket() socket: any) {
         log(`[MainController] Disconnected socket ${socket.id}`)
-        socketLogger.removeSocket(socket.id);
     }
 }

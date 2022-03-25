@@ -55,8 +55,11 @@ class RoomsService {
     leaveRoom(socketId: string, roomId: string) {
         if (!roomId) throw Error;
 
-        this.rooms[roomId].sockets = this.rooms[roomId].sockets.filter(socketId => socketId !== socketId);
+        logt(`[RoomService] before remove: ${JSON.stringify(this.rooms[roomId].sockets)}`)
+        this.rooms[roomId].sockets = this.rooms[roomId].sockets.filter(sId => sId !== socketId);
         log(`[RoomService] Removed socket from room: ${roomId} | ${socketId}`)
+        logt(`[RoomService] after remove: ${JSON.stringify(this.rooms[roomId].sockets)}`)
+
     }
 }
 
