@@ -2,12 +2,13 @@ import React, {useLayoutEffect, useState} from "react";
 
 import socketService from "./services/socketService";
 
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
 import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
 import RandomRoom from "./components/chat/RandomRoom";
 import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
 import ChatRoom from "./components/chat/ChatRoom";
+import PageNotFound from "./components/pageNotFound/PageNotFound";
 
 
 export const connectSocket = async () => {
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/rooms" element={<Rooms/>}/>
                     <Route path="/chat/random" element={<RandomRoom/>}/>
                     <Route path="/chat/rooms" element={<ChatRoom/>}/>
+                    <Route path="*" element={<PageNotFound/>}/>
                 </Routes>
             </Router>
         </ChatContext.Provider>
