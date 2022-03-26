@@ -1,83 +1,84 @@
 // message types: 'join' | 'own' | 'other'
 
 .message-container {
-    flex-grow: 2;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column-reverse;
+  flex-grow: 2;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: column-reverse;
 
-    font-family: 'Lato',sans-serif;
-    padding: 5px;
-    //border: 5px solid yellow;
+  font-family: 'Lato', sans-serif;
+  padding: 5px;
+  //border: 5px solid yellow;
 
-    .welcome-chat-text {
-        width: 100%;
-        color: grey;
-        text-align: center;
-        margin: 1rem 0;
-        font-size: 16pt;
-    }
+  .welcome-chat-text {
+    width: 100%;
+    color: grey;
+    text-align: center;
+    margin: 1rem 0;
+    font-size: 16pt;
+  }
 }
 
 .messages-wrap::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .chat-message-wrap {
-    box-sizing: border-box;
-    //min-width: 1em;
-    border-radius: 16px;
+  box-sizing: border-box;
+  //min-width: 1em;
+  border-radius: 16px;
 
-    padding: 6px 16px 9px;
-    margin: 0.3vh 0.5vh;
-    max-width: 70%;
-    word-break: break-word;
+  padding: 6px 16px 9px;
+  margin: 0.3vh 0.5vh;
+  max-width: 70%;
+  word-break: break-word;
 
 }
 
 .message-text {
-    font-size: 14pt;
-    line-height: 1.2;
+  font-size: 14pt;
+  line-height: 1.2;
 }
 
 @media (max-width: 600px) {
-    .message-sent {
-        word-break: break-word;
-        width: auto;
-        font-size: 12px;
-        min-width: 20vw;
-        max-width: initial;
-    }
+  .message-sent {
+    word-break: break-word;
+    width: auto;
+    font-size: 12px;
+    min-width: 20vw;
+    max-width: initial;
+  }
 }
 
 
 .other {
-    background-color: #e5e5ea;
-    color: black;
-    align-self: start;
+  background-color: #e5e5ea;
+  color: black;
+  align-self: start;
 }
 
 .owner {
-    background-color: #26a1e0;
-    color: white;
-    align-self: end;
+  background-color: #26a1e0;
+  color: white;
+  align-self: end;
 }
 
 
 .message-date {
-    color: grey;
-    user-select: none;
-    margin: 0 5px;
+  color: grey;
+  user-select: none;
+  margin: 0 5px;
 }
 
 .message-join {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
 
-    color: grey;
+  color: grey;
 }
 
