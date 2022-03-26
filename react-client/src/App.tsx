@@ -23,11 +23,13 @@ function App() {
     const [isInRoom, setInRoom] = useState<boolean>(false);
     const [isJoining, setIsJoining] = useState<boolean>(false);
     const [partnerLeft, setPartnerLeft] = useState<boolean>(false);
+    const [roomId, setRoomId] = useState<string>('');
 
     const chatContextValue: ChatContextProps = {
         isInRoom, setInRoom,
         isJoining, setIsJoining,
-        partnerLeft, setPartnerLeft
+        partnerLeft, setPartnerLeft,
+        roomId, setRoomId,
     };
 
 

@@ -7,6 +7,8 @@ export interface ChatContextProps {
     setIsJoining: (isJoining: boolean) => void;
     partnerLeft: boolean,
     setPartnerLeft: (partnerLeft: boolean) => void;
+    roomId: string,
+    setRoomId: (roomId: string) => void;
 }
 
 const defaultState: ChatContextProps = {
@@ -16,6 +18,8 @@ const defaultState: ChatContextProps = {
     setIsJoining: () => {},
     partnerLeft: false,
     setPartnerLeft: () => {},
+    roomId: '',
+    setRoomId: () => {},
 };
 
 export default React.createContext(defaultState);

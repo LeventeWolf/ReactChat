@@ -8,13 +8,14 @@ type RoomPropsType = {
 }
 
 export const Room: React.FC<RoomPropsType> = ({room}) => {
-    const {setInRoom} = useContext(ChatContext)
+    const {setInRoom, setRoomId} = useContext(ChatContext)
 
     function handleJoinRoom() {
         if (socketService.socket) {
             console.log('Joining room...')
             socketService.socket.emit('join_room', {roomId: room.roomId})
             setInRoom(true);
+            setRoomId(room.roomId)
         }
     }
 
