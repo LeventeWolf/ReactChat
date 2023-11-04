@@ -1,0 +1,23 @@
+name: Docker Build and Publish
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+      
+    - name: Build the Docker image
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/react-chat-client:master .
+      
+    - name: Push the Docker image to Docker Hub
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/react-chat-client:master
