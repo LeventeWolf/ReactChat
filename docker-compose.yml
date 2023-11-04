@@ -1,0 +1,23 @@
+version: '3.7'
+
+networks:
+  default:
+    name: react-chat
+
+services:
+
+  react-chat-client:
+    container_name: react-chat-client
+    image: docker.io/leventewolf/react-chat-client:${REACT_CHAT_CLIENT_IMAGE_TAG}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - socketio-server
+
+  socketio-server:
+    container_name: socketio-server
+    ports:
+      - "9000:9000"
+    environment:
+      PORT: 9000
+    image: docker.io/leventewolf/socketio-server:${SOCKETIO_SERVER_IMAGE_TAG}

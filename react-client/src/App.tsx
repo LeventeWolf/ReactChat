@@ -9,10 +9,12 @@ import RandomRoom from "./components/chat/RandomRoom";
 import ChatContext, {ChatContextProps} from "./components/shared/chat/chatContext";
 import ChatRoom from "./components/chat/ChatRoom";
 import PageNotFound from "./components/pageNotFound/PageNotFound";
+import config from "./shared/config";
 
 
 export const connectSocket = async () => {
-    await socketService.connect("http://192.168.0.22:9000")
+    console.log(`Connecting to Socket.IO on: ${config.socketIoServerUrl}`);
+    await socketService.connect(config.socketIoServerUrl)
         .catch((err) => {
             console.log("Error: ", err);
         });

@@ -1,6 +1,7 @@
 import {io, Socket} from "socket.io-client";
 // @ts-ignore
 import {DefaultEventsMap} from "socket.io-client/build/typed-events";
+import config from "../../shared/config";
 
 class SocketService {
     public socket: Socket | null = null;
@@ -15,7 +16,7 @@ class SocketService {
             }
 
             this.socket.on("connect", () => {
-                console.log('Connected to http://localhost:9000')
+                console.log(`Connected to ${config.socketIoServerUrl}`)
                 rs(this.socket as Socket);
                 if (this.socket) {
                     console.log('Client id: ' + this.socket.id);

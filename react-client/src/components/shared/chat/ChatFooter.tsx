@@ -59,7 +59,7 @@ const ChatFooter: React.FC<PropTypes> = ( {all_messages, setMessages} ) => {
     }
 
     function handleLeave() {
-        window.location.reload(false);
+        window.location.reload();
     }
 
     // Send messages by pressing key='Enter'
