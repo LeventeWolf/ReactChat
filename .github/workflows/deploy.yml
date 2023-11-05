@@ -11,7 +11,7 @@ jobs:
       - name: Deploy .env
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: .env
+          local: ./.env
           remote: /opt/react-chat/.env
           host: ${{ secrets.VM_URL }}
           username: ${{ secrets.VM_USER }}
@@ -19,7 +19,7 @@ jobs:
       - name: Deploy docker-comopse.yml
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: docker-compose.yml
+          local: ./docker-compose.yml
           remote: /opt/react-chat/docker-compose.yml
           host: ${{ secrets.VM_URL }}
           username: ${{ secrets.VM_USER }}
