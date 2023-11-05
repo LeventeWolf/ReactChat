@@ -42,7 +42,7 @@ jobs:
       
     - name: Build socketio-server:master
       working-directory: ./socketio-server
-      run: docker build -t leventewolf/react-chat-client:master .
+      run: docker build -t leventewolf/socketio-server:master .
 
   push-socketio-server:
     runs-on: ubuntu-latest
