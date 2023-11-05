@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: docker.io/leventewolf/react-chat-client:master
+          images: leventewolf/react-chat-client:master
       
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -31,4 +31,4 @@ jobs:
           context: ./react-client/
           dockerfile: ./react-client/Dockerfile
           push: true
-          tags: react-chat-client:master
+          tags: leventewolf/react-chat-client:master
