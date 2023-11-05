@@ -6,22 +6,27 @@ jobs:
  deploy-to-vm:
   runs-on: ubuntu-latest
   steps:
-      - name: Prepare .env
-        run: echo ${{ secrets.ENV }} >> .env
-      - name: Deploy .env
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: ./.env
-          remote: /opt/react-chat/.env
-          host: ${{ secrets.VM_URL }}
-          username: ${{ secrets.VM_USER }}
-          password: ${{ secrets.VM_PASSWORD }}
-      - name: Deploy docker-comopse.yml
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: ./docker-compose.yml
-          remote: /opt/react-chat/docker-compose.yml
-          host: ${{ secrets.VM_URL }}
-          username: ${{ secrets.VM_USER }}
-          password: ${{ secrets.VM_PASSWORD }}
+    - name: Check out the code
+      uses: actions/checkout@v4
+     
+    - name: Prepare .env
+      run: echo ${{ secrets.ENV }} >> ./.env
+   
+    - name: Deploy .env
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: ./.env
+        remote: /opt/react-chat/.env
+        host: ${{ secrets.VM_URL }}
+        username: ${{ secrets.VM_USER }}
+        password: ${{ secrets.VM_PASSWORD }}
+        
+    - name: Deploy docker-comopse.yml
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: ./docker-compose.yml
+        remote: /opt/react-chat/docker-compose.yml
+        host: ${{ secrets.VM_URL }}
+        username: ${{ secrets.VM_USER }}
+        password: ${{ secrets.VM_PASSWORD }}
   
