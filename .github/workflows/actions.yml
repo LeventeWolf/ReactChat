@@ -6,21 +6,17 @@ on:
       - master
 
 jobs:
-  login:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
   build-react-chat-client:
     runs-on: ubuntu-latest
-    needs: login
     steps:
     - name: Check out the code
       uses: actions/checkout@v4
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       
     - name: Build react-chat-client:master
       working-directory: ./react-client
@@ -28,17 +24,3 @@ jobs:
 
     - name: Push react-chat-client:master
       run: docker push leventewolf/react-chat-client:master
-
-  build-socketio-server:
-    runs-on: ubuntu-latest
-    needs: login
-    steps:
-    - name: Check out the code
-      uses: actions/checkout@v4
-      
-    - name: Build socketio-server:master
-      working-directory: ./socketio-server
-      run: docker build -t leventewolf/socketio-server:master .
-
-    - name: Push socketio-server:master
-      run: docker push leventewolf/socketio-server:master
