@@ -17,7 +17,7 @@ function Navbar() {
                         </NavLink>
                     </li>
                     <li className="nav-item mx-0 mx-lg-1 ">
-                        <NavLink className="nav-link" to="/Rooms">
+                        <NavLink className="nav-link" to="/rooms">
                             Rooms
                         </NavLink>
                     </li>

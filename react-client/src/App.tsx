@@ -2,7 +2,7 @@ import React, {useLayoutEffect, useState} from "react";
 
 import socketService from "./services/socketService";
 
-import {BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Rooms from "./components/rooms/Rooms";
 import Home from "./components/home/Home";
 import RandomRoom from "./components/chat/RandomRoom";
@@ -43,15 +43,15 @@ function App() {
 
     return (
         <ChatContext.Provider value={chatContextValue}>
-            <Router>
+            <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Home/>}/>
+                    <Route path="/" element={<Home/>} />
                     <Route path="/rooms" element={<Rooms/>}/>
                     <Route path="/chat/random" element={<RandomRoom/>}/>
                     <Route path="/chat/rooms" element={<ChatRoom/>}/>
                     <Route path="*" element={<PageNotFound/>}/>
                 </Routes>
-            </Router>
+            </BrowserRouter>
         </ChatContext.Provider>
     );
 }
